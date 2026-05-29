@@ -599,17 +599,21 @@ nav a:hover {
 .player-card-name,
 .player-name-center {
   position: absolute;
-  left: 50%;
+  left: 78px;
+  right: 90px;
   top: 50%;
-  transform: translate(-50%, -50%);
+
+  transform: translateY(-50%);
+
   color: #F8FAFC;
-  font-size: 20px;
-  font-weight: 900;
-  text-align: center;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  max-width: calc(100% - 130px);
-  line-height: 1.15;
+  font-size: 16px;
+  font-weight: 800;
+
+  text-align: left;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .player-card-elo,
