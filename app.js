@@ -1,16 +1,16 @@
 const DATA_FILE = "team_generator_daten.json";
 
 function rankFromElo(elo) {
-  if (elo < 1050) return "Leon";
-  if (elo < 1150) return "Iron";
-  if (elo < 1200) return "Bronze";
-  if (elo < 1250) return "Silver";
+  if (elo < 800) return "Leon";
+  if (elo < 1000) return "Iron";
+  if (elo < 1100) return "Bronze";
+  if (elo < 1200) return "Silver";
   if (elo < 1300) return "Gold";
-  if (elo < 1350) return "Platin";
-  if (elo < 1400) return "Emerald";
-  if (elo < 1450) return "Diamond";
-  if (elo < 1500) return "Master";
-  if (elo < 1550) return "Grandmaster";
+  if (elo < 1400) return "Platin";
+  if (elo < 1500) return "Emerald";
+  if (elo < 1600) return "Diamond";
+  if (elo < 1800) return "Master";
+  if (elo < 2000) return "Grandmaster";
   return "Challenger";
 }
 
