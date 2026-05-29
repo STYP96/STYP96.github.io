@@ -236,18 +236,26 @@ function renderTeammateStats(playersObj, matches) {
         if (partner === player) return;
 
         if (!partners[partner]) {
-          partners[partner] = { games: 0, wins: 0, losses: 0 };
+          partners[partner] = {
+            games: 0,
+            wins: 0,
+            losses: 0
+          };
         }
 
         partners[partner].games++;
 
-        if (won) partners[partner].wins++;
-        else partners[partner].losses++;
+        if (won) {
+          partners[partner].wins++;
+        } else {
+          partners[partner].losses++;
+        }
       });
     });
 
     const partnerList = Object.entries(partners).map(([name, stats]) => {
-      const wr = stats.games > 0 ? ((stats.wins / stats.games) * 100) : 0;
+      const wr = stats.games > 0 ? (stats.wins / stats.games) * 100 : 0;
+
       return {
         name,
         games: stats.games,
@@ -256,6 +264,8 @@ function renderTeammateStats(playersObj, matches) {
         wr
       };
     });
+
+    if (partnerList.length === 0) return;
 
     const byGames = [...partnerList].sort((a, b) => {
       if (b.games !== a.games) return b.games - a.games;
@@ -301,106 +311,17 @@ function renderPartnerRows(list) {
   return list.map((item, index) => `
     <div class="partner-row">
       <div class="partner-place">${index + 1}</div>
+
       <div class="partner-main">
         <strong>${escapeHtml(item.name)}</strong>
         <span>${item.games} Spiele · ${item.wins}-${item.losses}</span>
       </div>
+
       <div class="partner-wr ${item.wr >= 50 ? "good" : "bad"}">
         ${item.wr.toFixed(1)}%
       </div>
     </div>
   `).join("");
-}
-
-  playerNames.forEach(player => {
-    const partners = {};
-
-    matches.forEach(match => {
-      const team1 = match.team1 || [];
-      const team2 = match.team2 || [];
-      const winner = match.gewinner;
-
-      let ownTeam = null;
-      let won = false;
-
-      if (team1.includes(player)) {
-        ownTeam = team1;
-        won = winner === "Team 1";
-      } else if (team2.includes(player)) {
-        ownTeam = team2;
-        won = winner === "Team 2";
-      }
-
-      if (!ownTeam) return;
-
-      ownTeam.forEach(partner => {
-        if (partner === player) return;
-
-        if (!partners[partner]) {
-          partners[partner] = {
-            games: 0,
-            wins: 0,
-            losses: 0
-          };
-        }
-
-        partners[partner].games++;
-
-        if (won) {
-          partners[partner].wins++;
-        } else {
-          partners[partner].losses++;
-        }
-      });
-    });
-
-    const partnerList = Object.entries(partners).map(([name, stats]) => {
-      const wr = stats.games > 0 ? ((stats.wins / stats.games) * 100).toFixed(1) : "0.0";
-
-      return {
-        name,
-        games: stats.games,
-        wins: stats.wins,
-        losses: stats.losses,
-        wr: parseFloat(wr)
-      };
-    });
-
-    if (partnerList.length === 0) return;
-
-    const mostPlayed = [...partnerList].sort((a, b) => {
-      if (b.games !== a.games) return b.games - a.games;
-      return b.wr - a.wr;
-    })[0];
-
-    const bestWinrate = [...partnerList].sort((a, b) => {
-      if (b.wr !== a.wr) return b.wr - a.wr;
-      return b.games - a.games;
-    })[0];
-
-    const card = document.createElement("div");
-    card.className = "teammate-card";
-
-    card.innerHTML = `
-      <div class="teammate-player">${escapeHtml(player)}</div>
-
-      <div class="teammate-grid">
-        <div class="teammate-box">
-          <small>Am häufigsten gespielt mit</small>
-          <strong>${escapeHtml(mostPlayed.name)}</strong>
-          <span>${mostPlayed.games} Spiele · ${mostPlayed.wins}-${mostPlayed.losses} · ${mostPlayed.wr}% WR</span>
-        </div>
-
-        <div class="teammate-box">
-          <small>Höchste Winrate mit</small>
-          <strong>${escapeHtml(bestWinrate.name)}</strong>
-          <span>${bestWinrate.games} Spiele · ${bestWinrate.wins}-${bestWinrate.losses} · ${bestWinrate.wr}% WR</span>
-        </div>
-      </div>
-    `;
-
-    container.appendChild(card);
-  });
 }
 
 function escapeHtml(value) {
