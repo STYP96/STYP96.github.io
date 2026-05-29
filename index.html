@@ -6,98 +6,127 @@
   <title>Custom Games</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <aside class="sidebar">
     <nav>
       <a href="#overview">🏠 Übersicht</a>
+      <a href="#generator">⚔️ Teamgenerator</a>
       <a href="#ranking">👥 Ranking</a>
       <a href="#matches">🏆 Matches</a>
       <a href="#stats">📊 Statistiken</a>
+      <a href="#teammates">🤝 Mitstreiter</a>
     </nav>
+
     <div class="status">
-  <div>Live Dashboard</div>
-  <small>Nur Ansicht</small>
-</div>
+      <div>Live Dashboard</div>
+      <small>Nur Ansicht</small>
+    </div>
 
-<button id="adminBtn" class="admin-btn">🔒 Admin</button>
+    <button id="adminBtn" class="admin-btn">🔒 Admin</button>
 
-<small class="version">Web Version 1.0</small>
+    <small class="version">Web Version 1.0</small>
   </aside>
 
   <main class="content">
+
     <section id="overview" class="hero">
       <h1>Custom Games</h1>
 
       <div class="tiles">
-        <div class="tile"><span>👥</span><strong id="totalPlayers">0</strong><small>Spieler</small></div>
-        <div class="tile"><span>🏆</span><strong id="totalMatches">0</strong><small>Matches</small></div>
-        <div class="tile"><span>⚡</span><strong id="topElo">0</strong><small>Höchste Elo</small></div>
-        <div class="tile"><span>📈</span><strong id="avgElo">0</strong><small>Ø Elo</small></div>
+        <div class="tile">
+          <span>👥</span>
+          <strong id="totalPlayers">0</strong>
+          <small>Spieler</small>
+        </div>
+
+        <div class="tile">
+          <span>🏆</span>
+          <strong id="totalMatches">0</strong>
+          <small>Matches</small>
+        </div>
+
+        <div class="tile">
+          <span>⚡</span>
+          <strong id="topElo">0</strong>
+          <small>Höchste Elo</small>
+        </div>
+
+        <div class="tile">
+          <span>📈</span>
+          <strong id="avgElo">0</strong>
+          <small>Ø Elo</small>
+        </div>
       </div>
     </section>
+
     <section id="generator" class="card generator-card">
-  <div class="card-head">
-    <h2>TEAMGENERATOR</h2>
-    <span>Spieler auswählen und Match speichern</span>
-  </div>
-  <div class="card generator-card">
-  <div class="card-head">
-    <h2>👤 Spieler hinzufügen</h2>
-  </div>
+      <div class="card-head">
+        <h2>TEAMGENERATOR</h2>
+        <span>Spieler auswählen und Match speichern</span>
+      </div>
 
-  <div class="add-player-box">
-    <input
-      type="text"
-      id="newPlayerName"
-      placeholder="Spielername"
-    >
-
-    <button id="addPlayerBtn">
-      Spieler hinzufügen
-    </button>
-  </div>
-</div>
-  <div id="playerSelectList" class="player-select-list"></div>
-
-  <div class="generator-actions">
-    <button id="selectAllBtn">Alle auswählen</button>
-    <button id="clearSelectionBtn">Auswahl löschen</button>
-  </div>
-
-  <div class="generated-teams">
-
-    <div class="generated-team team-one">
-        <h3>🔵 Team Blau</h3>
-        <div id="team1Chance">0%</div>
-        <div id="team1List"></div>
-        <button id="team1WinBtn">Team 1 gewinnt</button>
-    </div>
-
-    <div class="generator-center">
-        <button id="generateTeamsBtn" class="generate-btn">
-            ⚔️ Teams generieren
-        </button>
-
-        <div class="vs-circle">
-            VS
+      <div class="add-player-card">
+        <div class="card-head">
+          <h2>👤 Spieler hinzufügen</h2>
         </div>
-    </div>
 
-    <div class="generated-team team-two">
-        <h3>🔴 Team Rot</h3>
-        <div id="team2Chance">0%</div>
-        <div id="team2List"></div>
-        <button id="team2WinBtn">Team 2 gewinnt</button>
-    </div>
+        <div class="add-player-box">
+          <input
+            type="text"
+            id="newPlayerName"
+            placeholder="Spielername"
+          />
 
-</div>
-</section>
+          <button id="addPlayerBtn">
+            Spieler hinzufügen
+          </button>
+        </div>
+      </div>
+
+      <div id="playerSelectList" class="player-select-list"></div>
+
+      <div class="generator-actions">
+        <button id="selectAllBtn">Alle auswählen</button>
+        <button id="clearSelectionBtn">Auswahl löschen</button>
+      </div>
+
+      <div class="generated-teams">
+
+        <div class="generated-team team-one">
+          <h3>🔵 Team Blau</h3>
+          <div id="team1Chance">0%</div>
+          <div id="team1List"></div>
+          <button id="team1WinBtn">Team 1 gewinnt</button>
+        </div>
+
+        <div class="generator-center">
+          <button id="generateTeamsBtn" class="generate-btn">
+            ⚔️ Teams generieren
+          </button>
+
+          <div class="vs-circle">
+            VS
+          </div>
+        </div>
+
+        <div class="generated-team team-two">
+          <h3>🔴 Team Rot</h3>
+          <div id="team2Chance">0%</div>
+          <div id="team2List"></div>
+          <button id="team2WinBtn">Team 2 gewinnt</button>
+        </div>
+
+      </div>
+    </section>
+
     <section class="grid">
       <div id="ranking" class="card ranking-card">
         <div class="card-head">
           <h2>RANKING</h2>
           <span>Sortiert nach Elo</span>
         </div>
+
         <div id="rankingList" class="ranking-list"></div>
       </div>
 
@@ -106,27 +135,31 @@
           <h2>LETZTE MATCHES</h2>
           <span>Matchhistorie</span>
         </div>
+
         <div id="matchList" class="match-list"></div>
       </div>
     </section>
 
     <section id="stats" class="card stats-card">
-  <div class="card-head">
-    <h2>STATISTIKEN</h2>
-    <span>Beste Werte</span>
-  </div>
-  <div id="statsList" class="stats-list"></div>
-</section>
+      <div class="card-head">
+        <h2>STATISTIKEN</h2>
+        <span>Beste Werte</span>
+      </div>
 
-<section id="teammates" class="card stats-card">
-  <div class="card-head">
-    <h2>MITSTREITER-STATISTIK</h2>
-    <span>Am häufigsten gespielt & höchste Winrate</span>
-  </div>
-  <div id="teammateStats" class="teammate-list"></div>
-</section>
+      <div id="statsList" class="stats-list"></div>
+    </section>
+
+    <section id="teammates" class="card stats-card">
+      <div class="card-head">
+        <h2>MITSTREITER-STATISTIK</h2>
+        <span>Mitspieler, Winrate & Gegner</span>
+      </div>
+
+      <div id="teammateStats" class="teammate-list"></div>
+    </section>
+
   </main>
 
-  <script src="app.js?v=28"></script>
+  <script src="app.js?v=29"></script>
 </body>
 </html>
