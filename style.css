@@ -386,7 +386,8 @@ nav a:hover {
   .teams {
     grid-template-columns: 1fr;
   }
-  .ranking-list .rank-row .rank-icon-wrap {
+}
+.ranking-list .rank-row .rank-icon-wrap {
   width: 44px !important;
   height: 44px !important;
   max-width: 44px !important;
@@ -404,5 +405,4 @@ nav a:hover {
   max-height: 36px !important;
   object-fit: contain !important;
   display: block !important;
-}
 }
