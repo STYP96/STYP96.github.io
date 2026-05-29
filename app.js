@@ -542,6 +542,7 @@ function renderPartnerRows(list, mode) {
 }
 
 function bindButtons() {
+  document.getElementById("adminBtn")?.addEventListener("click", adminLogin);
   document.getElementById("selectAllBtn")?.addEventListener("click", () => {
     document.querySelectorAll("#playerSelectList input").forEach(cb => cb.checked = true);
   });
