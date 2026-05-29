@@ -53,15 +53,26 @@ async function supabaseUpdatePlayer(name, data) {
 }
 
 async function supabaseDeleteMatch(matchId) {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${matchId}`, {
-    method: "DELETE",
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/matches?id=eq.${encodeURIComponent(matchId)}`,
+    {
+      method: "DELETE",
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        Prefer: "return=representation"
+      }
     }
-  });
+  );
 
-  if (!response.ok) throw new Error("Match konnte nicht gelöscht werden");
+  const deletedRows = await response.json();
+
+  if (!response.ok || deletedRows.length === 0) {
+    console.error("Delete fehlgeschlagen:", deletedRows);
+    throw new Error("Match wurde in Supabase nicht gelöscht");
+  }
+
+  return deletedRows;
 }
 
 function rankFromElo(elo) {
