@@ -1,6 +1,11 @@
 const SUPABASE_URL = "https://xzegzgckmybaevjdwzti.supabase.co";
 const SUPABASE_KEY = "sb_publishable_1GmRO60YM3XW_EaBf8WQrg_rkA9hrFi";
 
+let currentPlayers = [];
+let currentPlayersObj = {};
+let generatedTeam1 = [];
+let generatedTeam2 = [];
+
 async function supabaseFetch(table) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
     headers: {
@@ -9,11 +14,38 @@ async function supabaseFetch(table) {
     }
   });
 
-  if (!response.ok) {
-    throw new Error(`Supabase Fehler bei ${table}`);
-  }
-
+  if (!response.ok) throw new Error(`Supabase Fehler bei ${table}`);
   return await response.json();
+}
+
+async function supabaseInsert(table, data) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation"
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) throw new Error(`Insert Fehler bei ${table}`);
+  return await response.json();
+}
+
+async function supabaseUpdatePlayer(name, data) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/players?name=eq.${encodeURIComponent(name)}`, {
+    method: "PATCH",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) throw new Error(`Update Fehler bei ${name}`);
 }
 
 function rankFromElo(elo) {
@@ -42,6 +74,18 @@ function averageElo(names, playersObj) {
   return Math.round(sum / names.length);
 }
 
+function teamChances(team1, team2) {
+  const elo1 = averageElo(team1, currentPlayersObj);
+  const elo2 = averageElo(team2, currentPlayersObj);
+
+  if (!team1.length || !team2.length) return [0, 0];
+
+  const chance1 = Math.round((elo1 / (elo1 + elo2)) * 1000) / 10;
+  const chance2 = Math.round((100 - chance1) * 10) / 10;
+
+  return [chance1, chance2];
+}
+
 function medal(place) {
   if (place === 1) return "🥇";
   if (place === 2) return "🥈";
@@ -50,70 +94,176 @@ function medal(place) {
 }
 
 async function loadDashboard() {
-  try {
-    const playersData = await supabaseFetch("players");
-    const matchesData = await supabaseFetch("matches");
+  const playersData = await supabaseFetch("players");
+  const matchesData = await supabaseFetch("matches");
 
-    const playersObj = {};
-    playersData.forEach(p => {
-      playersObj[p.name] = {
-        wins: p.wins ?? 0,
-        losses: p.losses ?? 0,
-        elo: p.elo ?? 1200
-      };
-    });
-
-    const players = playersData.map(p => ({
-      name: p.name,
+  currentPlayersObj = {};
+  playersData.forEach(p => {
+    currentPlayersObj[p.name] = {
       wins: p.wins ?? 0,
       losses: p.losses ?? 0,
       elo: p.elo ?? 1200
-    }));
+    };
+  });
 
-    const matches = matchesData
-      .map(m => ({
-        id: m.id,
-        datum: m.datum,
-        gewinner: m.winner,
-        team1: m.team1 || [],
-        team2: m.team2 || []
-      }))
-      .sort((a, b) => new Date(b.datum) - new Date(a.datum));
+  currentPlayers = playersData.map(p => ({
+    name: p.name,
+    wins: p.wins ?? 0,
+    losses: p.losses ?? 0,
+    elo: p.elo ?? 1200
+  }));
 
-    players.sort((a, b) => {
-      if (b.elo !== a.elo) return b.elo - a.elo;
-      if (b.wins !== a.wins) return b.wins - a.wins;
-      return a.losses - b.losses;
-    });
+  const matches = matchesData
+    .map(m => ({
+      id: m.id,
+      datum: m.datum,
+      gewinner: m.winner,
+      team1: m.team1 || [],
+      team2: m.team2 || []
+    }))
+    .sort((a, b) => new Date(b.datum) - new Date(a.datum));
 
-    renderOverview(players, matches);
-    renderRanking(players);
-    renderMatches(matches, playersObj);
-    renderStats(players);
-    renderTeammateStats(playersObj, matches);
+  currentPlayers.sort((a, b) => {
+    if (b.elo !== a.elo) return b.elo - a.elo;
+    if (b.wins !== a.wins) return b.wins - a.wins;
+    return a.losses - b.losses;
+  });
 
-  } catch (error) {
-    console.error(error);
-
-    document.querySelector(".content").innerHTML = `
-      <div class="card">
-        <h2 style="color:#E11D48">Fehler beim Laden</h2>
-        <p>Supabase-Daten konnten nicht geladen werden.</p>
-      </div>
-    `;
-  }
+  renderOverview(currentPlayers, matches);
+  renderPlayerSelection(currentPlayers);
+  renderRanking(currentPlayers);
+  renderMatches(matches, currentPlayersObj);
+  renderStats(currentPlayers);
+  renderTeammateStats(currentPlayersObj, matches);
 }
 
 function renderOverview(players, matches) {
   const topElo = players.length ? Math.max(...players.map(p => p.elo)) : 0;
-  const avgElo = players.length
-    ? Math.round(players.reduce((sum, p) => sum + p.elo, 0) / players.length)
-    : 0;
+  const avgElo = players.length ? Math.round(players.reduce((sum, p) => sum + p.elo, 0) / players.length) : 0;
 
   document.getElementById("totalPlayers").textContent = players.length;
   document.getElementById("totalMatches").textContent = matches.length;
   document.getElementById("topElo").textContent = topElo;
   document.getElementById("avgElo").textContent = avgElo;
+}
+
+function renderPlayerSelection(players) {
+  const list = document.getElementById("playerSelectList");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  players.forEach(player => {
+    const label = document.createElement("label");
+    label.className = "player-check";
+
+    label.innerHTML = `
+      <input type="checkbox" value="${escapeHtml(player.name)}">
+      <span>${escapeHtml(player.name)}</span>
+      <small>${player.elo} Elo</small>
+    `;
+
+    list.appendChild(label);
+  });
+}
+
+function getSelectedPlayers() {
+  return Array.from(document.querySelectorAll("#playerSelectList input:checked"))
+    .map(cb => cb.value);
+}
+
+function generateTeams() {
+  const selected = getSelectedPlayers();
+
+  if (selected.length < 2) {
+    alert("Bitte mindestens 2 Spieler auswählen.");
+    return;
+  }
+
+  const shuffled = [...selected].sort(() => Math.random() - 0.5);
+
+  const sorted = shuffled.sort((a, b) => {
+    return (currentPlayersObj[b]?.elo ?? 1200) - (currentPlayersObj[a]?.elo ?? 1200);
+  });
+
+  generatedTeam1 = [];
+  generatedTeam2 = [];
+
+  sorted.forEach(player => {
+    const elo1 = averageElo(generatedTeam1, currentPlayersObj) || 0;
+    const elo2 = averageElo(generatedTeam2, currentPlayersObj) || 0;
+
+    if (generatedTeam1.length <= generatedTeam2.length && elo1 <= elo2) {
+      generatedTeam1.push(player);
+    } else if (generatedTeam2.length < generatedTeam1.length) {
+      generatedTeam2.push(player);
+    } else {
+      generatedTeam2.push(player);
+    }
+  });
+
+  renderGeneratedTeams();
+}
+
+function renderGeneratedTeams() {
+  const team1List = document.getElementById("team1List");
+  const team2List = document.getElementById("team2List");
+  const team1Chance = document.getElementById("team1Chance");
+  const team2Chance = document.getElementById("team2Chance");
+
+  const [c1, c2] = teamChances(generatedTeam1, generatedTeam2);
+
+  team1Chance.textContent = `${c1}% Gewinnchance`;
+  team2Chance.textContent = `${c2}% Gewinnchance`;
+
+  team1List.innerHTML = generatedTeam1.map(name => `<div>${escapeHtml(name)} · ${currentPlayersObj[name].elo} Elo</div>`).join("");
+  team2List.innerHTML = generatedTeam2.map(name => `<div>${escapeHtml(name)} · ${currentPlayersObj[name].elo} Elo</div>`).join("");
+}
+
+async function saveResult(winningTeamNumber) {
+  if (!generatedTeam1.length || !generatedTeam2.length) {
+    alert("Bitte zuerst Teams generieren.");
+    return;
+  }
+
+  const winners = winningTeamNumber === 1 ? generatedTeam1 : generatedTeam2;
+  const losers = winningTeamNumber === 1 ? generatedTeam2 : generatedTeam1;
+  const winnerText = winningTeamNumber === 1 ? "Team 1" : "Team 2";
+
+  try {
+    for (const name of winners) {
+      const p = currentPlayersObj[name];
+      await supabaseUpdatePlayer(name, {
+        wins: p.wins + 1,
+        elo: p.elo + 30
+      });
+    }
+
+    for (const name of losers) {
+      const p = currentPlayersObj[name];
+      await supabaseUpdatePlayer(name, {
+        losses: p.losses + 1,
+        elo: p.elo - 30
+      });
+    }
+
+    await supabaseInsert("matches", {
+      winner: winnerText,
+      team1: generatedTeam1,
+      team2: generatedTeam2
+    });
+
+    alert(`${winnerText} wurde gespeichert.`);
+
+    generatedTeam1 = [];
+    generatedTeam2 = [];
+    renderGeneratedTeams();
+
+    await loadDashboard();
+  } catch (error) {
+    console.error(error);
+    alert("Fehler beim Speichern des Ergebnisses.");
+  }
 }
 
 function renderRanking(players) {
@@ -127,19 +277,13 @@ function renderRanking(players) {
 
     row.innerHTML = `
       <div class="place">${medal(index + 1)}</div>
-
       <div class="rank-icon-wrap">
-        <img class="rank-icon"
-             src="/rank_icons/${rank}.png"
-             alt="${rank}"
-             onerror="this.style.display='none'; this.parentElement.innerHTML='${rank[0]}';">
+        <img class="rank-icon" src="/rank_icons/${rank}.png" alt="${rank}">
       </div>
-
       <div>
         <div class="player-name">${escapeHtml(p.name)}</div>
         <div class="player-sub">${rank} | WR: ${winrate(p.wins, p.losses)}% | Games: ${p.wins + p.losses}</div>
       </div>
-
       <div class="elo">${p.elo} Elo</div>
       <div class="wl">${p.wins} - ${p.losses}</div>
     `;
@@ -170,16 +314,14 @@ function renderMatches(matches, playersObj) {
         <div class="winner">${winnerText}</div>
         <div class="date">${formatDate(match.datum)}</div>
       </div>
-
       <div class="teams">
         <div class="team ${match.gewinner === "Team 1" ? "winner-team" : "loser-team"}">
           <div class="team-title">Team 1 · Ø ${averageElo(t1, playersObj)} Elo</div>
-          <div class="players">${t1.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
+          <div class="players">${t1.map(escapeHtml).join("<br>")}</div>
         </div>
-
         <div class="team ${match.gewinner === "Team 2" ? "winner-team" : "loser-team"}">
           <div class="team-title">Team 2 · Ø ${averageElo(t2, playersObj)} Elo</div>
-          <div class="players">${t2.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
+          <div class="players">${t2.map(escapeHtml).join("<br>")}</div>
         </div>
       </div>
     `;
@@ -198,29 +340,13 @@ function renderStats(players) {
 
   const topElo = [...players].sort((a, b) => b.elo - a.elo)[0];
   const mostGames = [...players].sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses))[0];
-  const bestWr = [...players]
-    .filter(p => p.wins + p.losses > 0)
-    .sort((a, b) => parseFloat(winrate(b.wins, b.losses)) - parseFloat(winrate(a.wins, a.losses)))[0];
+  const bestWr = [...players].filter(p => p.wins + p.losses > 0).sort((a, b) => parseFloat(winrate(b.wins, b.losses)) - parseFloat(winrate(a.wins, a.losses)))[0];
 
   list.innerHTML = `
     <div class="stat-grid">
-      <div class="stat-box">
-        <small>Höchste Elo</small>
-        <strong>${escapeHtml(topElo.name)}</strong>
-        <div class="player-sub">${topElo.elo} Elo</div>
-      </div>
-
-      <div class="stat-box">
-        <small>Meiste Spiele</small>
-        <strong>${escapeHtml(mostGames.name)}</strong>
-        <div class="player-sub">${mostGames.wins + mostGames.losses} Games</div>
-      </div>
-
-      <div class="stat-box">
-        <small>Beste Winrate</small>
-        <strong>${bestWr ? escapeHtml(bestWr.name) : "-"}</strong>
-        <div class="player-sub">${bestWr ? winrate(bestWr.wins, bestWr.losses) + "%" : "0.0%"}</div>
-      </div>
+      <div class="stat-box"><small>Höchste Elo</small><strong>${escapeHtml(topElo.name)}</strong><div class="player-sub">${topElo.elo} Elo</div></div>
+      <div class="stat-box"><small>Meiste Spiele</small><strong>${escapeHtml(mostGames.name)}</strong><div class="player-sub">${mostGames.wins + mostGames.losses} Games</div></div>
+      <div class="stat-box"><small>Beste Winrate</small><strong>${bestWr ? escapeHtml(bestWr.name) : "-"}</strong><div class="player-sub">${bestWr ? winrate(bestWr.wins, bestWr.losses) + "%" : "0.0%"}</div></div>
     </div>
   `;
 }
@@ -231,71 +357,36 @@ function renderTeammateStats(playersObj, matches) {
 
   container.innerHTML = "";
 
-  const playerNames = Object.keys(playersObj).sort();
-
-  if (!playerNames.length || !matches.length) {
-    container.innerHTML = `<div class="empty">Noch keine Mitspieler-Statistiken vorhanden.</div>`;
-    return;
-  }
-
-  playerNames.forEach(player => {
+  Object.keys(playersObj).sort().forEach(player => {
     const partners = {};
 
     matches.forEach(match => {
-      const team1 = match.team1 || [];
-      const team2 = match.team2 || [];
-      const winner = match.gewinner;
+      const team = match.team1.includes(player) ? match.team1 : match.team2.includes(player) ? match.team2 : null;
+      const won = match.team1.includes(player) ? match.gewinner === "Team 1" : match.gewinner === "Team 2";
 
-      let ownTeam = null;
-      let won = false;
+      if (!team) return;
 
-      if (team1.includes(player)) {
-        ownTeam = team1;
-        won = winner === "Team 1";
-      } else if (team2.includes(player)) {
-        ownTeam = team2;
-        won = winner === "Team 2";
-      }
-
-      if (!ownTeam) return;
-
-      ownTeam.forEach(partner => {
+      team.forEach(partner => {
         if (partner === player) return;
-
-        if (!partners[partner]) {
-          partners[partner] = { games: 0, wins: 0, losses: 0 };
-        }
-
+        if (!partners[partner]) partners[partner] = { games: 0, wins: 0, losses: 0 };
         partners[partner].games++;
-
         if (won) partners[partner].wins++;
         else partners[partner].losses++;
       });
     });
 
-    const partnerList = Object.entries(partners).map(([name, stats]) => {
-      const wr = stats.games > 0 ? (stats.wins / stats.games) * 100 : 0;
-
-      return {
-        name,
-        games: stats.games,
-        wins: stats.wins,
-        losses: stats.losses,
-        wr
-      };
-    });
+    const partnerList = Object.entries(partners).map(([name, s]) => ({
+      name,
+      games: s.games,
+      wins: s.wins,
+      losses: s.losses,
+      wr: s.games ? (s.wins / s.games) * 100 : 0
+    }));
 
     if (!partnerList.length) return;
 
-    const byGames = [...partnerList].sort((a, b) => {
-      if (b.games !== a.games) return b.games - a.games;
-      return b.wr - a.wr;
-    });
-
-    const byWinrate = [...partnerList].sort((a, b) => {
-      if (b.wr !== a.wr) return b.wr - a.wr;
-      return b.games - a.games;
-    });
+    const byGames = [...partnerList].sort((a, b) => b.games - a.games || b.wr - a.wr);
+    const byWinrate = [...partnerList].sort((a, b) => b.wr - a.wr || b.games - a.games);
 
     const details = document.createElement("details");
     details.className = "teammate-details";
@@ -305,13 +396,11 @@ function renderTeammateStats(playersObj, matches) {
         <span>${escapeHtml(player)}</span>
         <small>${partnerList.length} Mitspieler</small>
       </summary>
-
       <div class="teammate-columns">
         <div class="teammate-column">
           <h3>Am häufigsten gespielt mit</h3>
           ${renderPartnerRows(byGames, "games")}
         </div>
-
         <div class="teammate-column">
           <h3>Höchste Winrate mit</h3>
           ${renderPartnerRows(byWinrate, "winrate")}
@@ -323,38 +412,41 @@ function renderTeammateStats(playersObj, matches) {
   });
 }
 
-function renderPartnerRows(list, mode = "winrate") {
+function renderPartnerRows(list, mode) {
   return list.map((item, index) => {
-    const isGamesMode = mode === "games";
-    const mainValue = isGamesMode ? `${item.games}x` : `${item.wr.toFixed(1)}%`;
-    const valueClass = isGamesMode ? "games" : (item.wr >= 50 ? "good" : "bad");
+    const value = mode === "games" ? `${item.games}x` : `${item.wr.toFixed(1)}%`;
+    const cls = mode === "games" ? "games" : item.wr >= 50 ? "good" : "bad";
 
     return `
       <div class="partner-row">
         <div class="partner-place">${index + 1}</div>
-
         <div class="partner-main">
           <strong>${escapeHtml(item.name)}</strong>
           <span>${item.games} Spiele · ${item.wins}-${item.losses} · ${item.wr.toFixed(1)}% WR</span>
         </div>
-
-        <div class="partner-wr ${valueClass}">
-          ${mainValue}
-        </div>
+        <div class="partner-wr ${cls}">${value}</div>
       </div>
     `;
   }).join("");
 }
 
+function bindButtons() {
+  document.getElementById("selectAllBtn")?.addEventListener("click", () => {
+    document.querySelectorAll("#playerSelectList input").forEach(cb => cb.checked = true);
+  });
+
+  document.getElementById("clearSelectionBtn")?.addEventListener("click", () => {
+    document.querySelectorAll("#playerSelectList input").forEach(cb => cb.checked = false);
+  });
+
+  document.getElementById("generateTeamsBtn")?.addEventListener("click", generateTeams);
+  document.getElementById("team1WinBtn")?.addEventListener("click", () => saveResult(1));
+  document.getElementById("team2WinBtn")?.addEventListener("click", () => saveResult(2));
+}
+
 function formatDate(value) {
   if (!value) return "";
-
   const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return escapeHtml(value);
-  }
-
   return date.toLocaleString("de-DE", {
     day: "2-digit",
     month: "2-digit",
@@ -373,4 +465,5 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+bindButtons();
 loadDashboard();
