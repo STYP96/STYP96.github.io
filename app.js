@@ -53,17 +53,25 @@ async function loadDashboard() {
       return a.losses - b.losses;
     });
 
-    renderOverview(players, matches);
+       renderOverview(players, matches);
     renderRanking(players);
     renderMatches(matches, playersObj);
     renderStats(players);
-    renderTeammateStats(playersObj, matches);
+
+    if (typeof renderTeammateStats === "function") {
+      renderTeammateStats(playersObj, matches);
+    }
+
   } catch (error) {
+    console.error(error);
+
     document.querySelector(".content").innerHTML = `
       <div class="card">
         <h2 style="color:#E11D48">Fehler beim Laden</h2>
-        <p>Die Datei <strong>team_generator_daten.json</strong> konnte nicht geladen werden.</p>
+        <p>Es ist ein Fehler beim Laden oder Verarbeiten der Daten aufgetreten.</p>
       </div>
+    `;
+  }
     `;
   }
 }
