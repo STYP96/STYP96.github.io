@@ -638,7 +638,7 @@ function renderMatches(matches, playersObj) {
         <div class="team ${match.gewinner === "Team 2" ? "winner-team" : "loser-team"}">
           <div class="team-title">Team 2 · Ø ${averageElo(t2, playersObj)} Elo</div>
           <div class="players">
-  ${t1.map(name => {
+  ${t2.map(name => {
     const p = playersObj[name];
 
     return `
