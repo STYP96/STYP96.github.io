@@ -427,7 +427,16 @@ nav a:hover {
   align-items: center;
   font-weight: 800;
 }
+.teammate-summary::after {
+  content: "▼";
+  font-size: 22px;
+  color: #94A3B8;
+  transition: transform 0.25s ease;
+}
 
+.teammate-details[open] .teammate-summary::after {
+  transform: rotate(180deg);
+}
 .teammate-summary::-webkit-details-marker {
   display: none;
 }
