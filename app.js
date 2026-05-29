@@ -204,12 +204,113 @@ function renderTeammateStats(playersObj, matches) {
 
   container.innerHTML = "";
 
-  const playerNames = Object.keys(playersObj);
+  const playerNames = Object.keys(playersObj).sort();
 
   if (playerNames.length === 0 || matches.length === 0) {
     container.innerHTML = `<div class="empty">Noch keine Mitspieler-Statistiken vorhanden.</div>`;
     return;
   }
+
+  playerNames.forEach(player => {
+    const partners = {};
+
+    matches.forEach(match => {
+      const team1 = match.team1 || [];
+      const team2 = match.team2 || [];
+      const winner = match.gewinner;
+
+      let ownTeam = null;
+      let won = false;
+
+      if (team1.includes(player)) {
+        ownTeam = team1;
+        won = winner === "Team 1";
+      } else if (team2.includes(player)) {
+        ownTeam = team2;
+        won = winner === "Team 2";
+      }
+
+      if (!ownTeam) return;
+
+      ownTeam.forEach(partner => {
+        if (partner === player) return;
+
+        if (!partners[partner]) {
+          partners[partner] = { games: 0, wins: 0, losses: 0 };
+        }
+
+        partners[partner].games++;
+
+        if (won) partners[partner].wins++;
+        else partners[partner].losses++;
+      });
+    });
+
+    const partnerList = Object.entries(partners).map(([name, stats]) => {
+      const wr = stats.games > 0 ? ((stats.wins / stats.games) * 100) : 0;
+      return {
+        name,
+        games: stats.games,
+        wins: stats.wins,
+        losses: stats.losses,
+        wr
+      };
+    });
+
+    const byGames = [...partnerList].sort((a, b) => {
+      if (b.games !== a.games) return b.games - a.games;
+      return b.wr - a.wr;
+    });
+
+    const byWinrate = [...partnerList].sort((a, b) => {
+      if (b.wr !== a.wr) return b.wr - a.wr;
+      return b.games - a.games;
+    });
+
+    const details = document.createElement("details");
+    details.className = "teammate-details";
+
+    details.innerHTML = `
+      <summary class="teammate-summary">
+        <span>${escapeHtml(player)}</span>
+        <small>${partnerList.length} Mitspieler</small>
+      </summary>
+
+      <div class="teammate-columns">
+        <div class="teammate-column">
+          <h3>Am häufigsten gespielt mit</h3>
+          ${renderPartnerRows(byGames)}
+        </div>
+
+        <div class="teammate-column">
+          <h3>Höchste Winrate mit</h3>
+          ${renderPartnerRows(byWinrate)}
+        </div>
+      </div>
+    `;
+
+    container.appendChild(details);
+  });
+}
+
+function renderPartnerRows(list) {
+  if (!list.length) {
+    return `<div class="empty">Keine gemeinsamen Spiele.</div>`;
+  }
+
+  return list.map((item, index) => `
+    <div class="partner-row">
+      <div class="partner-place">${index + 1}</div>
+      <div class="partner-main">
+        <strong>${escapeHtml(item.name)}</strong>
+        <span>${item.games} Spiele · ${item.wins}-${item.losses}</span>
+      </div>
+      <div class="partner-wr ${item.wr >= 50 ? "good" : "bad"}">
+        ${item.wr.toFixed(1)}%
+      </div>
+    </div>
+  `).join("");
+}
 
   playerNames.forEach(player => {
     const partners = {};
