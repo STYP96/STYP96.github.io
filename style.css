@@ -1076,13 +1076,62 @@ nav a:hover {
   margin-bottom: 6px;
 }
 
+/* Summoner Icons */
+
+.summoner-icon,
+.summoner-icon-small,
 .generated-icon,
 .match-player-icon {
-  width: 26px;
-  height: 26px;
-  min-width: 26px;
-  border-radius: 50%;
-  object-fit: cover;
+  width: 44px !important;
+  height: 44px !important;
+
+  min-width: 44px !important;
+  min-height: 44px !important;
+
+  max-width: 44px !important;
+  max-height: 44px !important;
+
+  border-radius: 50% !important;
+  overflow: hidden !important;
+
+  object-fit: cover !important;
+  object-position: center center !important;
+
+  display: block;
+  flex-shrink: 0;
+
+  border: 3px solid transparent;
+  transition: all 0.25s ease;
+}
+
+.generated-icon,
+.match-player-icon {
+  width: 28px !important;
+  height: 28px !important;
+
+  min-width: 28px !important;
+  min-height: 28px !important;
+
+  max-width: 28px !important;
+  max-height: 28px !important;
+}
+
+.generated-player-elo {
+  margin-left: auto;
+  color: #A78BFA;
+  font-weight: 700;
+}
+.generated-player,
+.match-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.generated-player span,
+.match-player span {
+  white-space: nowrap;
 }
 
 .generated-player-elo {
