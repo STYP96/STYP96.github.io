@@ -403,14 +403,38 @@ function renderGeneratedTeams() {
   team1List.innerHTML = generatedTeam1
     .map(name => {
       const p = currentPlayersObj[name];
-      return `<div>${escapeHtml(name)} · ${p?.elo ?? 1200} Elo</div>`;
+      return `
+<div class="generated-player">
+  <img
+    class="generated-icon rank-${rankFromElo(p?.elo ?? 1200).toLowerCase()}"
+    src="${getProfileIconUrl(p?.profile_icon_id)}"
+    alt=""
+  >
+  <span>${escapeHtml(name)}</span>
+  <span class="generated-player-elo">
+    ${p?.elo ?? 1200} Elo
+  </span>
+</div>
+`;
     })
     .join("");
 
   team2List.innerHTML = generatedTeam2
     .map(name => {
       const p = currentPlayersObj[name];
-      return `<div>${escapeHtml(name)} · ${p?.elo ?? 1200} Elo</div>`;
+      return `
+<div class="generated-player">
+  <img
+    class="generated-icon rank-${rankFromElo(p?.elo ?? 1200).toLowerCase()}"
+    src="${getProfileIconUrl(p?.profile_icon_id)}"
+    alt=""
+  >
+  <span>${escapeHtml(name)}</span>
+  <span class="generated-player-elo">
+    ${p?.elo ?? 1200} Elo
+  </span>
+</div>
+`;
     })
     .join("");
 }
