@@ -869,3 +869,18 @@ nav a:hover {
 .add-player-box button:hover {
   background: #7C3AED;
 }
+.riot-link-btn {
+  position: absolute;
+  left: 14px;
+  bottom: 8px;
+  border: none;
+  background: transparent;
+  color: #A78BFA;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.riot-link-btn:hover {
+  color: #FFFFFF;
+}
