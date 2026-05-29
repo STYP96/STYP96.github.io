@@ -588,16 +588,21 @@ const byEnemies = Object.entries(enemies)
       </summary>
 
       <div class="teammate-columns">
-        <div class="teammate-column">
-          <h3>Am häufigsten gespielt mit</h3>
-          ${renderPartnerRows(byGames, "games")}
-        </div>
+  <div class="teammate-column">
+    <h3>Am häufigsten gespielt mit</h3>
+    ${renderPartnerRows(byGames, "games")}
+  </div>
 
-        <div class="teammate-column">
-          <h3>Höchste Winrate mit</h3>
-          ${renderPartnerRows(byWinrate, "winrate")}
-        </div>
-      </div>
+  <div class="teammate-column">
+    <h3>Höchste Winrate mit</h3>
+    ${renderPartnerRows(byWinrate, "winrate")}
+  </div>
+
+  <div class="teammate-column">
+    <h3>Am häufigsten gespielt gegen</h3>
+    ${renderEnemyRows(byEnemies)}
+  </div>
+</div>
     `;
 
     container.appendChild(details);
@@ -623,7 +628,24 @@ function renderPartnerRows(list, mode) {
     `;
   }).join("");
 }
+function renderEnemyRows(list) {
+  return list.map((item, index) => {
+    return `
+      <div class="partner-row">
+        <div class="partner-place">${index + 1}</div>
 
+        <div class="partner-main">
+          <strong>${escapeHtml(item.name)}</strong>
+          <span>${item.games} Spiele gegeneinander</span>
+        </div>
+
+        <div class="partner-wr">
+          ${item.games}x
+        </div>
+      </div>
+    `;
+  }).join("");
+}
 function bindButtons() {
   document.getElementById("adminBtn")?.addEventListener("click", adminLogin);
   document.getElementById("addPlayerBtn")
