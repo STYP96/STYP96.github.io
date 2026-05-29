@@ -1,8 +1,12 @@
 const SUPABASE_URL = "https://xzegzgckmybaevjdwzti.supabase.co";
 const SUPABASE_KEY = "sb_publishable_1GmRO60YM3XW_EaBf8WQrg_rkA9hrFi";
 
+const ADMIN_PASSWORD = "kotbatzen";
+
+let isAdmin = false;
 let currentPlayers = [];
 let currentPlayersObj = {};
+let currentMatches = [];
 let generatedTeam1 = [];
 let generatedTeam2 = [];
 
@@ -46,6 +50,18 @@ async function supabaseUpdatePlayer(name, data) {
   });
 
   if (!response.ok) throw new Error(`Update Fehler bei ${name}`);
+}
+
+async function supabaseDeleteMatch(matchId) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${matchId}`, {
+    method: "DELETE",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+
+  if (!response.ok) throw new Error("Match konnte nicht gelöscht werden");
 }
 
 function rankFromElo(elo) {
@@ -113,7 +129,7 @@ async function loadDashboard() {
     elo: p.elo ?? 1200
   }));
 
-  const matches = matchesData
+  currentMatches = matchesData
     .map(m => ({
       id: m.id,
       datum: m.datum,
@@ -129,12 +145,12 @@ async function loadDashboard() {
     return a.losses - b.losses;
   });
 
-  renderOverview(currentPlayers, matches);
+  renderOverview(currentPlayers, currentMatches);
   renderPlayerSelection(currentPlayers);
   renderRanking(currentPlayers);
-  renderMatches(matches, currentPlayersObj);
+  renderMatches(currentMatches, currentPlayersObj);
   renderStats(currentPlayers);
-  renderTeammateStats(currentPlayersObj, matches);
+  renderTeammateStats(currentPlayersObj, currentMatches);
 }
 
 function renderOverview(players, matches) {
@@ -182,7 +198,6 @@ function generateTeams() {
 
   const shuffled = [...selected];
 
-  // Fisher-Yates Shuffle (echtes Random)
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -207,8 +222,13 @@ function renderGeneratedTeams() {
   team1Chance.textContent = `${c1}% Gewinnchance`;
   team2Chance.textContent = `${c2}% Gewinnchance`;
 
-  team1List.innerHTML = generatedTeam1.map(name => `<div>${escapeHtml(name)} · ${currentPlayersObj[name].elo} Elo</div>`).join("");
-  team2List.innerHTML = generatedTeam2.map(name => `<div>${escapeHtml(name)} · ${currentPlayersObj[name].elo} Elo</div>`).join("");
+  team1List.innerHTML = generatedTeam1
+    .map(name => `<div>${escapeHtml(name)} · ${currentPlayersObj[name].elo} Elo</div>`)
+    .join("");
+
+  team2List.innerHTML = generatedTeam2
+    .map(name => `<div>${escapeHtml(name)} · ${currentPlayersObj[name].elo} Elo</div>`)
+    .join("");
 }
 
 async function saveResult(winningTeamNumber) {
@@ -254,6 +274,68 @@ async function saveResult(winningTeamNumber) {
   } catch (error) {
     console.error(error);
     alert("Fehler beim Speichern des Ergebnisses.");
+  }
+}
+
+function adminLogin() {
+  const input = prompt("Admin-Passwort:");
+
+  if (input === ADMIN_PASSWORD) {
+    isAdmin = true;
+    alert("Admin-Modus aktiviert.");
+    renderMatches(currentMatches, currentPlayersObj);
+  } else {
+    alert("Falsches Passwort.");
+  }
+}
+
+async function deleteMatch(matchId) {
+  if (!isAdmin) {
+    alert("Nur im Admin-Modus möglich.");
+    return;
+  }
+
+  const match = currentMatches.find(m => String(m.id) === String(matchId));
+
+  if (!match) {
+    alert("Match wurde nicht gefunden.");
+    return;
+  }
+
+  const ok = confirm("Dieses Match wirklich löschen? Wins, Losses und Elo werden zurückgerechnet.");
+  if (!ok) return;
+
+  const winners = match.gewinner === "Team 1" ? match.team1 : match.team2;
+  const losers = match.gewinner === "Team 1" ? match.team2 : match.team1;
+
+  try {
+    for (const name of winners) {
+      const p = currentPlayersObj[name];
+      if (!p) continue;
+
+      await supabaseUpdatePlayer(name, {
+        wins: Math.max(0, p.wins - 1),
+        elo: p.elo - 30
+      });
+    }
+
+    for (const name of losers) {
+      const p = currentPlayersObj[name];
+      if (!p) continue;
+
+      await supabaseUpdatePlayer(name, {
+        losses: Math.max(0, p.losses - 1),
+        elo: p.elo + 30
+      });
+    }
+
+    await supabaseDeleteMatch(matchId);
+
+    alert("Match wurde gelöscht und die Statistik wurde zurückgerechnet.");
+    await loadDashboard();
+  } catch (error) {
+    console.error(error);
+    alert("Fehler beim Löschen des Matches.");
   }
 }
 
@@ -303,13 +385,24 @@ function renderMatches(matches, playersObj) {
     card.innerHTML = `
       <div class="match-top">
         <div class="winner">${winnerText}</div>
-        <div class="date">${formatDate(match.datum)}</div>
+
+        <div style="display:flex; gap:10px; align-items:center;">
+          <div class="date">${formatDate(match.datum)}</div>
+
+          ${
+            isAdmin
+              ? `<button class="delete-match-btn" onclick="deleteMatch('${match.id}')">🗑️ Löschen</button>`
+              : ""
+          }
+        </div>
       </div>
+
       <div class="teams">
         <div class="team ${match.gewinner === "Team 1" ? "winner-team" : "loser-team"}">
           <div class="team-title">Team 1 · Ø ${averageElo(t1, playersObj)} Elo</div>
           <div class="players">${t1.map(escapeHtml).join("<br>")}</div>
         </div>
+
         <div class="team ${match.gewinner === "Team 2" ? "winner-team" : "loser-team"}">
           <div class="team-title">Team 2 · Ø ${averageElo(t2, playersObj)} Elo</div>
           <div class="players">${t2.map(escapeHtml).join("<br>")}</div>
@@ -331,13 +424,29 @@ function renderStats(players) {
 
   const topElo = [...players].sort((a, b) => b.elo - a.elo)[0];
   const mostGames = [...players].sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses))[0];
-  const bestWr = [...players].filter(p => p.wins + p.losses > 0).sort((a, b) => parseFloat(winrate(b.wins, b.losses)) - parseFloat(winrate(a.wins, a.losses)))[0];
+  const bestWr = [...players]
+    .filter(p => p.wins + p.losses > 0)
+    .sort((a, b) => parseFloat(winrate(b.wins, b.losses)) - parseFloat(winrate(a.wins, a.losses)))[0];
 
   list.innerHTML = `
     <div class="stat-grid">
-      <div class="stat-box"><small>Höchste Elo</small><strong>${escapeHtml(topElo.name)}</strong><div class="player-sub">${topElo.elo} Elo</div></div>
-      <div class="stat-box"><small>Meiste Spiele</small><strong>${escapeHtml(mostGames.name)}</strong><div class="player-sub">${mostGames.wins + mostGames.losses} Games</div></div>
-      <div class="stat-box"><small>Beste Winrate</small><strong>${bestWr ? escapeHtml(bestWr.name) : "-"}</strong><div class="player-sub">${bestWr ? winrate(bestWr.wins, bestWr.losses) + "%" : "0.0%"}</div></div>
+      <div class="stat-box">
+        <small>Höchste Elo</small>
+        <strong>${escapeHtml(topElo.name)}</strong>
+        <div class="player-sub">${topElo.elo} Elo</div>
+      </div>
+
+      <div class="stat-box">
+        <small>Meiste Spiele</small>
+        <strong>${escapeHtml(mostGames.name)}</strong>
+        <div class="player-sub">${mostGames.wins + mostGames.losses} Games</div>
+      </div>
+
+      <div class="stat-box">
+        <small>Beste Winrate</small>
+        <strong>${bestWr ? escapeHtml(bestWr.name) : "-"}</strong>
+        <div class="player-sub">${bestWr ? winrate(bestWr.wins, bestWr.losses) + "%" : "0.0%"}</div>
+      </div>
     </div>
   `;
 }
@@ -352,8 +461,15 @@ function renderTeammateStats(playersObj, matches) {
     const partners = {};
 
     matches.forEach(match => {
-      const team = match.team1.includes(player) ? match.team1 : match.team2.includes(player) ? match.team2 : null;
-      const won = match.team1.includes(player) ? match.gewinner === "Team 1" : match.gewinner === "Team 2";
+      const team = match.team1.includes(player)
+        ? match.team1
+        : match.team2.includes(player)
+          ? match.team2
+          : null;
+
+      const won = match.team1.includes(player)
+        ? match.gewinner === "Team 1"
+        : match.gewinner === "Team 2";
 
       if (!team) return;
 
@@ -387,11 +503,13 @@ function renderTeammateStats(playersObj, matches) {
         <span>${escapeHtml(player)}</span>
         <small>${partnerList.length} Mitspieler</small>
       </summary>
+
       <div class="teammate-columns">
         <div class="teammate-column">
           <h3>Am häufigsten gespielt mit</h3>
           ${renderPartnerRows(byGames, "games")}
         </div>
+
         <div class="teammate-column">
           <h3>Höchste Winrate mit</h3>
           ${renderPartnerRows(byWinrate, "winrate")}
@@ -411,10 +529,12 @@ function renderPartnerRows(list, mode) {
     return `
       <div class="partner-row">
         <div class="partner-place">${index + 1}</div>
+
         <div class="partner-main">
           <strong>${escapeHtml(item.name)}</strong>
           <span>${item.games} Spiele · ${item.wins}-${item.losses} · ${item.wr.toFixed(1)}% WR</span>
         </div>
+
         <div class="partner-wr ${cls}">${value}</div>
       </div>
     `;
@@ -433,6 +553,7 @@ function bindButtons() {
   document.getElementById("generateTeamsBtn")?.addEventListener("click", generateTeams);
   document.getElementById("team1WinBtn")?.addEventListener("click", () => saveResult(1));
   document.getElementById("team2WinBtn")?.addEventListener("click", () => saveResult(2));
+  document.getElementById("adminBtn")?.addEventListener("click", adminLogin);
 }
 
 function formatDate(value) {
