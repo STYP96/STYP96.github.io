@@ -40,6 +40,7 @@ async function loadDashboard() {
 
     const playersObj = data.spieler || {};
     const matches = data.historie || [];
+
     const players = Object.entries(playersObj).map(([name, d]) => ({
       name,
       wins: d.wins ?? 0,
@@ -53,14 +54,11 @@ async function loadDashboard() {
       return a.losses - b.losses;
     });
 
-       renderOverview(players, matches);
+    renderOverview(players, matches);
     renderRanking(players);
     renderMatches(matches, playersObj);
     renderStats(players);
-
-    if (typeof renderTeammateStats === "function") {
-      renderTeammateStats(playersObj, matches);
-    }
+    renderTeammateStats(playersObj, matches);
 
   } catch (error) {
     console.error(error);
@@ -72,18 +70,15 @@ async function loadDashboard() {
       </div>
     `;
   }
-    `;
-  }
 }
 
 function renderOverview(players, matches) {
-  const totalPlayers = players.length;
   const topElo = players.length ? Math.max(...players.map(p => p.elo)) : 0;
   const avgElo = players.length
     ? Math.round(players.reduce((sum, p) => sum + p.elo, 0) / players.length)
     : 0;
 
-  document.getElementById("totalPlayers").textContent = totalPlayers;
+  document.getElementById("totalPlayers").textContent = players.length;
   document.getElementById("totalMatches").textContent = matches.length;
   document.getElementById("topElo").textContent = topElo;
   document.getElementById("avgElo").textContent = avgElo;
@@ -102,21 +97,26 @@ function renderRanking(players) {
     const rank = rankFromElo(p.elo);
     const row = document.createElement("div");
     row.className = "rank-row";
+
     row.innerHTML = `
       <div class="place">${medal(index + 1)}</div>
+
       <div class="rank-icon-wrap">
-    <img class="rank-icon"
-         src="/rank_icons/${rank}.png"
-         alt="${rank}"
-         onerror="this.style.display='none'; this.parentElement.innerHTML='${rank[0]}';">
+        <img class="rank-icon"
+             src="/rank_icons/${rank}.png"
+             alt="${rank}"
+             onerror="this.style.display='none'; this.parentElement.innerHTML='${rank[0]}';">
       </div>
+
       <div>
         <div class="player-name">${escapeHtml(p.name)}</div>
         <div class="player-sub">${rank} | WR: ${winrate(p.wins, p.losses)}% | Games: ${p.wins + p.losses}</div>
       </div>
+
       <div class="elo">${p.elo} Elo</div>
       <div class="wl">${p.wins} - ${p.losses}</div>
     `;
+
     list.appendChild(row);
   });
 }
@@ -137,22 +137,26 @@ function renderMatches(matches, players) {
 
     const card = document.createElement("div");
     card.className = "match";
+
     card.innerHTML = `
       <div class="match-top">
         <div class="winner">${winnerText}</div>
         <div class="date">${escapeHtml(match.datum || "")}</div>
       </div>
+
       <div class="teams">
-  <div class="team ${match.gewinner === "Team 1" ? "winner-team" : "loser-team"}">
-    <div class="team-title">Team 1 · Ø ${averageElo(t1, players)} Elo</div>
-    <div class="players">${t1.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
-  </div>
-  <div class="team ${match.gewinner === "Team 2" ? "winner-team" : "loser-team"}">
-    <div class="team-title">Team 2 · Ø ${averageElo(t2, players)} Elo</div>
-    <div class="players">${t2.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
-  </div>
-</div>
+        <div class="team ${match.gewinner === "Team 1" ? "winner-team" : "loser-team"}">
+          <div class="team-title">Team 1 · Ø ${averageElo(t1, players)} Elo</div>
+          <div class="players">${t1.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
+        </div>
+
+        <div class="team ${match.gewinner === "Team 2" ? "winner-team" : "loser-team"}">
+          <div class="team-title">Team 2 · Ø ${averageElo(t2, players)} Elo</div>
+          <div class="players">${t2.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
+        </div>
+      </div>
     `;
+
     list.appendChild(card);
   });
 }
@@ -178,11 +182,13 @@ function renderStats(players) {
         <strong>${escapeHtml(topElo.name)}</strong>
         <div class="player-sub">${topElo.elo} Elo</div>
       </div>
+
       <div class="stat-box">
         <small>Meiste Spiele</small>
         <strong>${escapeHtml(mostGames.name)}</strong>
         <div class="player-sub">${mostGames.wins + mostGames.losses} Games</div>
       </div>
+
       <div class="stat-box">
         <small>Beste Winrate</small>
         <strong>${bestWr ? escapeHtml(bestWr.name) : "-"}</strong>
@@ -190,6 +196,110 @@ function renderStats(players) {
       </div>
     </div>
   `;
+}
+
+function renderTeammateStats(playersObj, matches) {
+  const container = document.getElementById("teammateStats");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const playerNames = Object.keys(playersObj);
+
+  if (playerNames.length === 0 || matches.length === 0) {
+    container.innerHTML = `<div class="empty">Noch keine Mitspieler-Statistiken vorhanden.</div>`;
+    return;
+  }
+
+  playerNames.forEach(player => {
+    const partners = {};
+
+    matches.forEach(match => {
+      const team1 = match.team1 || [];
+      const team2 = match.team2 || [];
+      const winner = match.gewinner;
+
+      let ownTeam = null;
+      let won = false;
+
+      if (team1.includes(player)) {
+        ownTeam = team1;
+        won = winner === "Team 1";
+      } else if (team2.includes(player)) {
+        ownTeam = team2;
+        won = winner === "Team 2";
+      }
+
+      if (!ownTeam) return;
+
+      ownTeam.forEach(partner => {
+        if (partner === player) return;
+
+        if (!partners[partner]) {
+          partners[partner] = {
+            games: 0,
+            wins: 0,
+            losses: 0
+          };
+        }
+
+        partners[partner].games++;
+
+        if (won) {
+          partners[partner].wins++;
+        } else {
+          partners[partner].losses++;
+        }
+      });
+    });
+
+    const partnerList = Object.entries(partners).map(([name, stats]) => {
+      const wr = stats.games > 0 ? ((stats.wins / stats.games) * 100).toFixed(1) : "0.0";
+
+      return {
+        name,
+        games: stats.games,
+        wins: stats.wins,
+        losses: stats.losses,
+        wr: parseFloat(wr)
+      };
+    });
+
+    if (partnerList.length === 0) return;
+
+    const mostPlayed = [...partnerList].sort((a, b) => {
+      if (b.games !== a.games) return b.games - a.games;
+      return b.wr - a.wr;
+    })[0];
+
+    const bestWinrate = [...partnerList].sort((a, b) => {
+      if (b.wr !== a.wr) return b.wr - a.wr;
+      return b.games - a.games;
+    })[0];
+
+    const card = document.createElement("div");
+    card.className = "teammate-card";
+
+    card.innerHTML = `
+      <div class="teammate-player">${escapeHtml(player)}</div>
+
+      <div class="teammate-grid">
+        <div class="teammate-box">
+          <small>Am häufigsten gespielt mit</small>
+          <strong>${escapeHtml(mostPlayed.name)}</strong>
+          <span>${mostPlayed.games} Spiele · ${mostPlayed.wins}-${mostPlayed.losses} · ${mostPlayed.wr}% WR</span>
+        </div>
+
+        <div class="teammate-box">
+          <small>Höchste Winrate mit</small>
+          <strong>${escapeHtml(bestWinrate.name)}</strong>
+          <span>${bestWinrate.games} Spiele · ${bestWinrate.wins}-${bestWinrate.losses} · ${bestWinrate.wr}% WR</span>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
 }
 
 function escapeHtml(value) {
