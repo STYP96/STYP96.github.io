@@ -97,7 +97,7 @@ function renderRanking(players) {
       <div class="place">${medal(index + 1)}</div>
       <div class="rank-icon-wrap">
     <img class="rank-icon"
-         src="rank_icons/${rank}.png"
+         src="/rank_icons/${rank}.png"
          alt="${rank}"
          onerror="this.style.display='none'; this.parentElement.innerHTML='${rank[0]}';">
       </div>
