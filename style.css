@@ -891,40 +891,40 @@ nav a:hover {
 }
 /* Summoner Icons */
 
-.summoner-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  object-fit: cover;
+.summoner-icon,
+.summoner-icon-small {
+  width: 44px !important;
+  height: 44px !important;
+
+  min-width: 44px !important;
+  min-height: 44px !important;
+
+  max-width: 44px !important;
+  max-height: 44px !important;
+
+  border-radius: 50% !important;
+  overflow: hidden !important;
+
+  object-fit: cover !important;
+  object-position: center center !important;
+
   display: block;
   flex-shrink: 0;
+
+  border: 3px solid transparent;
+  transition: all 0.25s ease;
 }
 
-.summoner-icon-small {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 8px;
+.rank-icon-wrap .summoner-icon-small {
+  width: 44px !important;
+  height: 44px !important;
+  margin-right: 0 !important;
 }
 
 .ranking-player {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-/* Summoner Icons */
-
-.summoner-icon,
-.summoner-icon-small {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid transparent;
-  transition: all 0.25s ease;
 }
 
 /* Leon */
