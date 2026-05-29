@@ -322,7 +322,11 @@ function renderPlayerSelection(players) {
       <span class="custom-check"></span>
 
       <span class="player-card-name">
-        <img class="summoner-icon" src="${getProfileIconUrl(player.profile_icon_id)}" alt="">
+        <img
+            class="summoner-icon rank-${rankFromElo(player.elo).toLowerCase()}"
+            src="${getProfileIconUrl(player.profile_icon_id)}"
+            alt=""
+          >
         <span>${escapeHtml(player.name)}</span>
       </span>
 
@@ -516,7 +520,11 @@ function renderRanking(players) {
       <div class="place">${medal(index + 1)}</div>
 
       <div class="rank-icon-wrap">
-        <img class="rank-icon" src="/rank_icons/${rank}.png" alt="${rank}">
+        <img
+          class="summoner-icon-small rank-${rank.toLowerCase()}"
+          src="${getProfileIconUrl(p.profile_icon_id)}"
+          alt=""
+        >      
       </div>
 
       <div>
