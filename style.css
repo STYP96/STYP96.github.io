@@ -825,3 +825,36 @@ nav a:hover {
     max-width: none;
   }
 }
+.add-player-box {
+  display: flex;
+  gap: 10px;
+}
+
+.add-player-box input {
+  flex: 1;
+  background: #111827;
+  border: 1px solid #243047;
+  border-radius: 10px;
+  padding: 12px;
+  color: white;
+  font-size: 15px;
+}
+
+.add-player-box input:focus {
+  outline: none;
+  border-color: #A78BFA;
+}
+
+.add-player-box button {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  background: #6D28D9;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.add-player-box button:hover {
+  background: #7C3AED;
+}
