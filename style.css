@@ -892,3 +892,18 @@ nav a:hover {
     color: #A78BFA;
     box-shadow: 0 0 30px rgba(109,40,217,0.35);
 }
+.admin-btn{
+  width:100%;
+  margin-top:12px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#7C3AED;
+  color:white;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.admin-btn:hover{
+  opacity:0.9;
+}
