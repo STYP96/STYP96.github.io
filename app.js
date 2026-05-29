@@ -65,11 +65,17 @@ async function supabaseDeleteMatch(matchId) {
     }
   );
 
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Delete Fehler:", errorText);
+    throw new Error("Match konnte nicht gelöscht werden.");
+  }
+
   const deletedRows = await response.json();
 
-  if (!response.ok || deletedRows.length === 0) {
-    console.error("Delete fehlgeschlagen:", deletedRows);
-    throw new Error("Match wurde in Supabase nicht gelöscht");
+  if (!deletedRows || deletedRows.length === 0) {
+    console.error("Delete fehlgeschlagen. Keine Zeile gelöscht:", deletedRows);
+    throw new Error("Kein Match gelöscht. Prüfe ID oder Supabase DELETE Policy.");
   }
 
   return deletedRows;
@@ -320,6 +326,10 @@ async function deleteMatch(matchId) {
   const losers = match.gewinner === "Team 1" ? match.team2 : match.team1;
 
   try {
+    console.log("Lösche Match-ID:", matchId);
+
+    await supabaseDeleteMatch(matchId);
+
     for (const name of winners) {
       const p = currentPlayersObj[name];
       if (!p) continue;
@@ -340,13 +350,11 @@ async function deleteMatch(matchId) {
       });
     }
 
-    await supabaseDeleteMatch(matchId);
-
     alert("Match wurde gelöscht und die Statistik wurde zurückgerechnet.");
     await loadDashboard();
   } catch (error) {
     console.error(error);
-    alert("Fehler beim Löschen des Matches.");
+    alert("Fehler beim Löschen des Matches. Es wurden keine Stats zurückgerechnet, wenn das Match nicht gelöscht werden konnte.");
   }
 }
 
@@ -554,6 +562,7 @@ function renderPartnerRows(list, mode) {
 
 function bindButtons() {
   document.getElementById("adminBtn")?.addEventListener("click", adminLogin);
+
   document.getElementById("selectAllBtn")?.addEventListener("click", () => {
     document.querySelectorAll("#playerSelectList input").forEach(cb => cb.checked = true);
   });
@@ -565,7 +574,6 @@ function bindButtons() {
   document.getElementById("generateTeamsBtn")?.addEventListener("click", generateTeams);
   document.getElementById("team1WinBtn")?.addEventListener("click", () => saveResult(1));
   document.getElementById("team2WinBtn")?.addEventListener("click", () => saveResult(2));
-  document.getElementById("adminBtn")?.addEventListener("click", adminLogin);
 }
 
 function formatDate(value) {
