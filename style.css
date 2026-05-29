@@ -14,7 +14,11 @@
   --muted: #94A3B8;
 }
 
-* .player-card-name,
+* {
+  box-sizing: border-box;
+}
+
+.player-card-name,
 .player-name-center {
   position: absolute;
   left: 62px;
@@ -39,8 +43,6 @@
 .player-name-center span {
   display: block;
   margin-left: 42px;
-}
-  box-sizing: border-box;
 }
 
 html {
