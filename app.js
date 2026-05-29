@@ -617,12 +617,42 @@ function renderMatches(matches, playersObj) {
       <div class="teams">
         <div class="team ${match.gewinner === "Team 1" ? "winner-team" : "loser-team"}">
           <div class="team-title">Team 1 · Ø ${averageElo(t1, playersObj)} Elo</div>
-          <div class="players">${t1.map(escapeHtml).join("<br>")}</div>
+          <div class="players">
+  ${t1.map(name => {
+    const p = playersObj[name];
+
+    return `
+      <div class="match-player">
+        <img
+          class="match-player-icon rank-${rankFromElo(p?.elo ?? 1200).toLowerCase()}"
+          src="${getProfileIconUrl(p?.profile_icon_id)}"
+          alt=""
+        >
+        <span>${escapeHtml(name)}</span>
+      </div>
+    `;
+  }).join("")}
+</div>
         </div>
 
         <div class="team ${match.gewinner === "Team 2" ? "winner-team" : "loser-team"}">
           <div class="team-title">Team 2 · Ø ${averageElo(t2, playersObj)} Elo</div>
-          <div class="players">${t2.map(escapeHtml).join("<br>")}</div>
+          <div class="players">
+  ${t1.map(name => {
+    const p = playersObj[name];
+
+    return `
+      <div class="match-player">
+        <img
+          class="match-player-icon rank-${rankFromElo(p?.elo ?? 1200).toLowerCase()}"
+          src="${getProfileIconUrl(p?.profile_icon_id)}"
+          alt=""
+        >
+        <span>${escapeHtml(name)}</span>
+      </div>
+    `;
+  }).join("")}
+</div>
         </div>
       </div>
     `;
