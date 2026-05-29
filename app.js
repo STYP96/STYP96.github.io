@@ -289,12 +289,12 @@ function renderTeammateStats(playersObj, matches) {
       <div class="teammate-columns">
         <div class="teammate-column">
           <h3>Am häufigsten gespielt mit</h3>
-          ${renderPartnerRows(byGames)}
+          ${renderPartnerRows(byGames, "games")}
         </div>
 
         <div class="teammate-column">
           <h3>Höchste Winrate mit</h3>
-          ${renderPartnerRows(byWinrate)}
+          ${renderPartnerRows(byWinrate, "winrate")}
         </div>
       </div>
     `;
@@ -303,25 +303,31 @@ function renderTeammateStats(playersObj, matches) {
   });
 }
 
-function renderPartnerRows(list) {
+function renderPartnerRows(list, mode = "winrate") {
   if (!list.length) {
     return `<div class="empty">Keine gemeinsamen Spiele.</div>`;
   }
 
-  return list.map((item, index) => `
-    <div class="partner-row">
-      <div class="partner-place">${index + 1}</div>
+  return list.map((item, index) => {
+    const isGamesMode = mode === "games";
+    const mainValue = isGamesMode ? `${item.games}x` : `${item.wr.toFixed(1)}%`;
+    const valueClass = isGamesMode ? "games" : (item.wr >= 50 ? "good" : "bad");
 
-      <div class="partner-main">
-        <strong>${escapeHtml(item.name)}</strong>
-        <span>${item.games} Spiele · ${item.wins}-${item.losses}</span>
-      </div>
+    return `
+      <div class="partner-row">
+        <div class="partner-place">${index + 1}</div>
 
-      <div class="partner-wr ${item.wr >= 50 ? "good" : "bad"}">
-        ${item.wr.toFixed(1)}%
+        <div class="partner-main">
+          <strong>${escapeHtml(item.name)}</strong>
+          <span>${item.games} Spiele · ${item.wins}-${item.losses} · ${item.wr.toFixed(1)}% WR</span>
+        </div>
+
+        <div class="partner-wr ${valueClass}">
+          ${mainValue}
+        </div>
       </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 function escapeHtml(value) {
