@@ -548,7 +548,33 @@ function renderTeammateStats(playersObj, matches) {
     }));
 
     if (!partnerList.length) return;
+    const enemies = {};
 
+matches.forEach(match => {
+
+  let enemyTeam = null;
+
+  if (match.team1.includes(player)) {
+    enemyTeam = match.team2;
+  } else if (match.team2.includes(player)) {
+    enemyTeam = match.team1;
+  }
+
+  if (!enemyTeam) return;
+
+  enemyTeam.forEach(enemy => {
+    if (!enemies[enemy]) {
+      enemies[enemy] = 0;
+    }
+
+    enemies[enemy]++;
+  });
+
+});
+
+const byEnemies = Object.entries(enemies)
+  .map(([name, games]) => ({ name, games }))
+  .sort((a, b) => b.games - a.games);
     const byGames = [...partnerList].sort((a, b) => b.games - a.games || b.wr - a.wr);
     const byWinrate = [...partnerList].sort((a, b) => b.wr - a.wr || b.games - a.games);
 
