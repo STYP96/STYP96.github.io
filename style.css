@@ -884,3 +884,29 @@ nav a:hover {
 .riot-link-btn:hover {
   color: #FFFFFF;
 }
+/* Summoner Icons */
+
+.summoner-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}
+
+.summoner-icon-small {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.ranking-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
