@@ -427,3 +427,59 @@ nav a:hover {
 .team.loser-team .team-title {
   color: #E11D48 !important;
 }
+.teammate-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.teammate-card {
+  background: #111827;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.teammate-player {
+  font-size: 17px;
+  font-weight: 800;
+  color: #E5E7EB;
+  margin-bottom: 10px;
+}
+
+.teammate-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.teammate-box {
+  background: #0B1220;
+  border: 1px solid #243047;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.teammate-box small {
+  display: block;
+  color: #94A3B8;
+  margin-bottom: 6px;
+}
+
+.teammate-box strong {
+  display: block;
+  font-size: 16px;
+  color: #22C55E;
+  margin-bottom: 4px;
+}
+
+.teammate-box span {
+  color: #CBD5E1;
+  font-size: 13px;
+}
+
+@media (max-width: 1050px) {
+  .teammate-grid {
+    grid-template-columns: 1fr;
+  }
+}
