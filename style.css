@@ -844,3 +844,47 @@ nav a:hover {
     grid-template-columns: 1fr;
   }
 }
+.generated-teams {
+    display: grid;
+    grid-template-columns: 1fr 180px 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+.generator-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.generate-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 800;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg,#6D28D9,#A78BFA);
+    color: white;
+}
+
+.generate-btn:hover {
+    transform: translateY(-2px);
+}
+
+.vs-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #111827;
+    border: 3px solid #6D28D9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    font-weight: 900;
+    color: #A78BFA;
+    box-shadow: 0 0 30px rgba(109,40,217,0.35);
+}
