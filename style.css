@@ -322,7 +322,23 @@ nav a:hover {
   padding: 20px;
   text-align: center;
 }
+.rank-icon-wrap {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
 
+.rank-icon {
+    width: 24px !important;
+    height: 24px !important;
+    max-width: 24px !important;
+    max-height: 24px !important;
+    object-fit: contain;
+    display: block;
+}
 @media (max-width: 1050px) {
   body {
     display: block;
@@ -370,18 +386,4 @@ nav a:hover {
   .teams {
     grid-template-columns: 1fr;
   }
-  .rank-icon-wrap {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.rank-icon {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
-    display: block;
-}
 }
