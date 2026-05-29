@@ -1,6 +1,6 @@
 const SUPABASE_URL = "https://xzegzgckmybaevjdwzti.supabase.co";
 const SUPABASE_KEY = "sb_publishable_1GmRO60YM3XW_EaBf8WQrg_rkA9hrFi";
-const RIOT_API_KEY = "DEIN_RIOT_API_KEY";
+const RIOT_API_KEY = "RGAPI-77fe1f07-5cb8-4cf4-b08c-c36aecc0386e";
 const DDRAGON_VERSION = "15.12.1";
 
 const ADMIN_PASSWORD = "kotbatzen";
