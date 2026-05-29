@@ -180,23 +180,26 @@ function generateTeams() {
     return;
   }
 
-  const shuffled = [...selected].sort(() => Math.random() - 0.5);
+  const maxTeam1Size = Math.ceil(selected.length / 2);
+  const maxTeam2Size = Math.floor(selected.length / 2);
 
-  const sorted = shuffled.sort((a, b) => {
-    return (currentPlayersObj[b]?.elo ?? 1200) - (currentPlayersObj[a]?.elo ?? 1200);
-  });
+  const sorted = [...selected]
+    .sort(() => Math.random() - 0.5)
+    .sort((a, b) => (currentPlayersObj[b]?.elo ?? 1200) - (currentPlayersObj[a]?.elo ?? 1200));
 
   generatedTeam1 = [];
   generatedTeam2 = [];
 
   sorted.forEach(player => {
-    const elo1 = averageElo(generatedTeam1, currentPlayersObj) || 0;
-    const elo2 = averageElo(generatedTeam2, currentPlayersObj) || 0;
+    const sumElo1 = generatedTeam1.reduce((sum, name) => sum + (currentPlayersObj[name]?.elo ?? 1200), 0);
+    const sumElo2 = generatedTeam2.reduce((sum, name) => sum + (currentPlayersObj[name]?.elo ?? 1200), 0);
 
-    if (generatedTeam1.length <= generatedTeam2.length && elo1 <= elo2) {
-      generatedTeam1.push(player);
-    } else if (generatedTeam2.length < generatedTeam1.length) {
+    if (generatedTeam1.length >= maxTeam1Size) {
       generatedTeam2.push(player);
+    } else if (generatedTeam2.length >= maxTeam2Size) {
+      generatedTeam1.push(player);
+    } else if (sumElo1 <= sumElo2) {
+      generatedTeam1.push(player);
     } else {
       generatedTeam2.push(player);
     }
