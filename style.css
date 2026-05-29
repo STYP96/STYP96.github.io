@@ -584,3 +584,116 @@ nav a:hover {
     grid-template-columns: 1fr;
   }
 }
+.generator-card {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.player-select-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.player-check {
+  background: #111827;
+  border: 1px solid #243047;
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.player-check:hover {
+  border-color: #6D28D9;
+}
+
+.player-check span {
+  font-weight: 800;
+}
+
+.player-check small {
+  color: #94A3B8;
+}
+
+.generator-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.generator-actions button,
+.generated-team button {
+  border: none;
+  border-radius: 10px;
+  padding: 11px 14px;
+  background: #2B185A;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.generator-actions button:hover,
+.generated-team button:hover {
+  background: #6D28D9;
+}
+
+.generated-teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.generated-team {
+  background: #0B1220;
+  border: 1px solid #243047;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.generated-team h3 {
+  margin: 0 0 8px;
+}
+
+.team-one h3,
+#team1Chance {
+  color: #1E90FF;
+}
+
+.team-two h3,
+#team2Chance {
+  color: #E11D48;
+}
+
+#team1Chance,
+#team2Chance {
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+#team1List,
+#team2List {
+  min-height: 80px;
+  color: #E5E7EB;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.team-one {
+  border-color: #1E90FF;
+}
+
+.team-two {
+  border-color: #E11D48;
+}
+
+@media (max-width: 1050px) {
+  .generated-teams {
+    grid-template-columns: 1fr;
+  }
+}
