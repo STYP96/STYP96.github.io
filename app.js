@@ -95,7 +95,12 @@ function renderRanking(players) {
     row.className = "rank-row";
     row.innerHTML = `
       <div class="place">${medal(index + 1)}</div>
-      <div class="rank-badge">${rank[0]}</div>
+      <div class="rank-icon-wrap">
+    <img class="rank-icon"
+         src="rank_icons/${rank}.png"
+         alt="${rank}"
+         onerror="this.style.display='none'; this.parentElement.innerHTML='${rank[0]}';">
+      </div>
       <div>
         <div class="player-name">${escapeHtml(p.name)}</div>
         <div class="player-sub">${rank} | WR: ${winrate(p.wins, p.losses)}% | Games: ${p.wins + p.losses}</div>
