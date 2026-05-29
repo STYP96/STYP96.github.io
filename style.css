@@ -406,3 +406,24 @@ nav a:hover {
   object-fit: contain !important;
   display: block !important;
 }
+.hero p {
+  display: none;
+}
+
+.team.winner-team {
+  border: 2px solid #22C55E !important;
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.25);
+}
+
+.team.loser-team {
+  border: 2px solid #E11D48 !important;
+  box-shadow: 0 0 16px rgba(225, 29, 72, 0.18);
+}
+
+.team.winner-team .team-title {
+  color: #22C55E !important;
+}
+
+.team.loser-team .team-title {
+  color: #E11D48 !important;
+}
