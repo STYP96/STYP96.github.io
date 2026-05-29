@@ -1035,3 +1035,25 @@ nav a:hover {
     max-width: none;
   }
 }
+.generated-player,
+.match-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.generated-icon,
+.match-player-icon {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.generated-player-elo {
+  margin-left: auto;
+  color: #A78BFA;
+  font-weight: 700;
+}
