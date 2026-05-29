@@ -32,7 +32,36 @@
         <div class="tile"><span>📈</span><strong id="avgElo">0</strong><small>Ø Elo</small></div>
       </div>
     </section>
+    <section id="generator" class="card generator-card">
+  <div class="card-head">
+    <h2>TEAMGENERATOR</h2>
+    <span>Spieler auswählen und Match speichern</span>
+  </div>
 
+  <div id="playerSelectList" class="player-select-list"></div>
+
+  <div class="generator-actions">
+    <button id="selectAllBtn">Alle auswählen</button>
+    <button id="clearSelectionBtn">Auswahl löschen</button>
+    <button id="generateTeamsBtn">Teams generieren</button>
+  </div>
+
+  <div class="generated-teams">
+    <div class="generated-team team-one">
+      <h3>Team 1</h3>
+      <div id="team1Chance">0%</div>
+      <div id="team1List"></div>
+      <button id="team1WinBtn">Team 1 gewinnt</button>
+    </div>
+
+    <div class="generated-team team-two">
+      <h3>Team 2</h3>
+      <div id="team2Chance">0%</div>
+      <div id="team2List"></div>
+      <button id="team2WinBtn">Team 2 gewinnt</button>
+    </div>
+  </div>
+</section>
     <section class="grid">
       <div id="ranking" class="card ranking-card">
         <div class="card-head">
