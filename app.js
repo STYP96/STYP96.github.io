@@ -134,15 +134,15 @@ function renderMatches(matches, players) {
         <div class="date">${escapeHtml(match.datum || "")}</div>
       </div>
       <div class="teams">
-        <div class="team blue">
-          <div class="team-title">🔵 Team 1 · Ø ${averageElo(t1, players)} Elo</div>
-          <div class="players">${t1.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
-        </div>
-        <div class="team red">
-          <div class="team-title">🔴 Team 2 · Ø ${averageElo(t2, players)} Elo</div>
-          <div class="players">${t2.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
-        </div>
-      </div>
+  <div class="team ${match.gewinner === "Team 1" ? "winner-team" : "loser-team"}">
+    <div class="team-title">Team 1 · Ø ${averageElo(t1, players)} Elo</div>
+    <div class="players">${t1.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
+  </div>
+  <div class="team ${match.gewinner === "Team 2" ? "winner-team" : "loser-team"}">
+    <div class="team-title">Team 2 · Ø ${averageElo(t2, players)} Elo</div>
+    <div class="players">${t2.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
+  </div>
+</div>
     `;
     list.appendChild(card);
   });
