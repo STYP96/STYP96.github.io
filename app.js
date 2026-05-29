@@ -192,8 +192,14 @@ function renderPlayerSelection(players) {
 
     label.innerHTML = `
       <input type="checkbox" value="${escapeHtml(player.name)}">
-      <span>${escapeHtml(player.name)}</span>
-      <small>${player.elo} Elo</small>
+
+      <span class="custom-check"></span>
+
+      <span class="player-card-name">${escapeHtml(player.name)}</span>
+
+      <span class="player-card-elo">${player.elo} Elo</span>
+
+      <span class="player-card-wr">${winrate(player.wins, player.losses)}% WR</span>
     `;
 
     list.appendChild(label);
