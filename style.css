@@ -31,6 +31,8 @@ body {
   display: flex;
 }
 
+/* Sidebar */
+
 .sidebar {
   width: 230px;
   min-height: 100vh;
@@ -84,6 +86,24 @@ nav a:hover {
 .version {
   margin: 18px 4px 0;
 }
+
+.admin-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #7C3AED;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.admin-btn:hover {
+  opacity: 0.9;
+}
+
+/* Layout */
 
 .content {
   margin-left: 230px;
@@ -241,7 +261,6 @@ nav a:hover {
   overflow: visible;
 }
 
-/* Kein doppeltes Icon neben Namen im Ranking */
 .ranking-player img {
   display: none !important;
 }
@@ -596,7 +615,6 @@ nav a:hover {
   box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.35), 0 0 18px rgba(34, 197, 94, 0.16);
 }
 
-/* Teamgenerator Name + Icon */
 .player-card-name,
 .player-name-center {
   position: absolute;
@@ -645,6 +663,8 @@ nav a:hover {
   max-height: 34px !important;
 
   border-radius: 50% !important;
+  overflow: hidden !important;
+
   object-fit: cover !important;
   object-position: center center !important;
 }
@@ -811,22 +831,6 @@ nav a:hover {
   box-shadow: 0 0 30px rgba(109,40,217,0.35);
 }
 
-.admin-btn {
-  width: 100%;
-  margin-top: 12px;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #7C3AED;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.admin-btn:hover {
-  opacity: 0.9;
-}
-
 /* Add Player */
 
 .add-player-box {
@@ -879,20 +883,14 @@ nav a:hover {
   color: #FFFFFF;
 }
 
-/* Summoner Icons */
-
-/* Summoner Icons */
+/* Alle Icons */
 
 .summoner-icon,
-.summoner-icon-small,
-.generated-icon,
-.match-player-icon {
+.summoner-icon-small {
   width: 44px !important;
   height: 44px !important;
-
   min-width: 44px !important;
   min-height: 44px !important;
-
   max-width: 44px !important;
   max-height: 44px !important;
 
@@ -902,10 +900,11 @@ nav a:hover {
   object-fit: cover !important;
   object-position: center center !important;
 
-  display: block;
-  flex-shrink: 0;
+  display: block !important;
+  flex-shrink: 0 !important;
 
-  border: 3px solid transparent;
+  border: 3px solid transparent !important;
+  box-sizing: border-box !important;
   transition: all 0.25s ease;
 }
 
@@ -913,13 +912,33 @@ nav a:hover {
 .match-player-icon {
   width: 28px !important;
   height: 28px !important;
-
   min-width: 28px !important;
   min-height: 28px !important;
-
   max-width: 28px !important;
   max-height: 28px !important;
+
+  border-radius: 50% !important;
+  overflow: hidden !important;
+
+  object-fit: cover !important;
+  object-position: center center !important;
+
+  display: block !important;
+  flex-shrink: 0 !important;
+
+  border: 3px solid transparent !important;
+  box-sizing: border-box !important;
+  transition: all 0.25s ease;
 }
+
+.rank-icon-wrap .summoner-icon-small {
+  width: 44px !important;
+  height: 44px !important;
+  margin-right: 0 !important;
+}
+
+/* Spielerzeilen mit Icon */
+
 .generated-player,
 .match-player {
   display: flex;
@@ -938,58 +957,53 @@ nav a:hover {
   color: #A78BFA;
   font-weight: 700;
 }
-.rank-icon-wrap .summoner-icon-small {
-  width: 44px !important;
-  height: 44px !important;
-  margin-right: 0 !important;
-}
 
 /* Rank Farben */
 
 .rank-leon {
-  border-color: #ff69b4;
+  border-color: #ff69b4 !important;
 }
 
 .rank-iron {
-  border-color: #6b7280;
+  border-color: #6b7280 !important;
 }
 
 .rank-bronze {
-  border-color: #cd7f32;
+  border-color: #cd7f32 !important;
 }
 
 .rank-silver {
-  border-color: #c0c0c0;
+  border-color: #c0c0c0 !important;
 }
 
 .rank-gold {
-  border-color: #ffd700;
+  border-color: #ffd700 !important;
 }
 
 .rank-platin {
-  border-color: #4fd1c5;
+  border-color: #4fd1c5 !important;
 }
 
 .rank-emerald {
-  border-color: #10b981;
+  border-color: #10b981 !important;
 }
 
 .rank-diamond {
-  border-color: #60a5fa;
+  border-color: #60a5fa !important;
 }
 
 .rank-master {
-  border-color: #a855f7;
+  border-color: #a855f7 !important;
   box-shadow: 0 0 10px #a855f7;
 }
 
 .rank-grandmaster {
-  border-color: #ef4444;
+  border-color: #ef4444 !important;
   box-shadow: 0 0 12px #ef4444;
 }
 
 .rank-challenger {
-  border-color: #ffffff;
+  border-color: #ffffff !important;
   animation: challengerGlow 2s infinite alternate;
 }
 
@@ -1067,75 +1081,4 @@ nav a:hover {
   .team-two {
     max-width: none;
   }
-}
-.generated-player,
-.match-player {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-/* Summoner Icons */
-
-.summoner-icon,
-.summoner-icon-small,
-.generated-icon,
-.match-player-icon {
-  width: 44px !important;
-  height: 44px !important;
-
-  min-width: 44px !important;
-  min-height: 44px !important;
-
-  max-width: 44px !important;
-  max-height: 44px !important;
-
-  border-radius: 50% !important;
-  overflow: hidden !important;
-
-  object-fit: cover !important;
-  object-position: center center !important;
-
-  display: block;
-  flex-shrink: 0;
-
-  border: 3px solid transparent;
-  transition: all 0.25s ease;
-}
-
-.generated-icon,
-.match-player-icon {
-  width: 28px !important;
-  height: 28px !important;
-
-  min-width: 28px !important;
-  min-height: 28px !important;
-
-  max-width: 28px !important;
-  max-height: 28px !important;
-}
-
-.generated-player-elo {
-  margin-left: auto;
-  color: #A78BFA;
-  font-weight: 700;
-}
-.generated-player,
-.match-player {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.generated-player span,
-.match-player span {
-  white-space: nowrap;
-}
-
-.generated-player-elo {
-  margin-left: auto;
-  color: #A78BFA;
-  font-weight: 700;
 }
