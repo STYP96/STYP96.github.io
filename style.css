@@ -625,17 +625,15 @@ nav a:hover {
 
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  justify-content: flex-start;
 
   color: #F8FAFC;
   font-size: 12px;
   font-weight: 800;
-  text-align: center;
+  text-align: left;
 
   white-space: nowrap;
-  word-break: keep-all;
-  overflow-wrap: normal;
+  overflow: hidden;
   line-height: 1.15;
 }
 
