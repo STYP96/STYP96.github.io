@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>No RL Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">No RL</div>
+    <nav>
+      <a href="#overview">🏠 Übersicht</a>
+      <a href="#ranking">👥 Ranking</a>
+      <a href="#matches">🏆 Matches</a>
+      <a href="#stats">📊 Statistiken</a>
+    </nav>
+    <div class="status">
+      <div>Live Dashboard</div>
+      <small>Nur Ansicht</small>
+    </div>
+    <small class="version">Web Version 1.0</small>
+  </aside>
+
+  <main class="content">
+    <section id="overview" class="hero">
+      <h1>No RL</h1>
+      <p>Öffentliche Übersicht für Ranking, Elo, Matches und Statistiken.</p>
+
+      <div class="tiles">
+        <div class="tile"><span>👥</span><strong id="totalPlayers">0</strong><small>Spieler</small></div>
+        <div class="tile"><span>🏆</span><strong id="totalMatches">0</strong><small>Matches</small></div>
+        <div class="tile"><span>⚡</span><strong id="topElo">0</strong><small>Höchste Elo</small></div>
+        <div class="tile"><span>📈</span><strong id="avgElo">0</strong><small>Ø Elo</small></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div id="ranking" class="card ranking-card">
+        <div class="card-head">
+          <h2>RANKING</h2>
+          <span>Sortiert nach Elo</span>
+        </div>
+        <div id="rankingList" class="ranking-list"></div>
+      </div>
+
+      <div id="matches" class="card matches-card">
+        <div class="card-head">
+          <h2>LETZTE MATCHES</h2>
+          <span>Matchhistorie</span>
+        </div>
+        <div id="matchList" class="match-list"></div>
+      </div>
+    </section>
+
+    <section id="stats" class="card stats-card">
+      <div class="card-head">
+        <h2>STATISTIKEN</h2>
+        <span>Beste Werte</span>
+      </div>
+      <div id="statsList" class="stats-list"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

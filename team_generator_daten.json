@@ -1,0 +1,98 @@
+{
+    "spieler": {
+        "STYP": {
+            "wins": 2,
+            "losses": 0,
+            "elo": 1260
+        },
+        "Clausiil": {
+            "wins": 1,
+            "losses": 2,
+            "elo": 1170
+        },
+        "Van Hagen": {
+            "wins": 2,
+            "losses": 1,
+            "elo": 1230
+        },
+        "Fat Top Man": {
+            "wins": 0,
+            "losses": 3,
+            "elo": 1110
+        },
+        "4th Act Surprise": {
+            "wins": 0,
+            "losses": 1,
+            "elo": 1170
+        },
+        "Inferno BANANE": {
+            "wins": 0,
+            "losses": 1,
+            "elo": 1170
+        },
+        "GerhartReinlunzn": {
+            "wins": 0,
+            "losses": 1,
+            "elo": 1170
+        },
+        "Kasaskusini": {
+            "wins": 0,
+            "losses": 0,
+            "elo": 1200
+        },
+        "PXLHC": {
+            "wins": 2,
+            "losses": 0,
+            "elo": 1260
+        },
+        "Watson": {
+            "wins": 2,
+            "losses": 0,
+            "elo": 1260
+        }
+    },
+    "historie": [
+        {
+            "datum": "29.05.2026 09:16",
+            "gewinner": "Team 2",
+            "team1": [
+                "Fat Top Man",
+                "GerhartReinlunzn",
+                "4th Act Surprise"
+            ],
+            "team2": [
+                "Clausiil",
+                "Van Hagen",
+                "STYP"
+            ]
+        },
+        {
+            "datum": "28.05.2026 20:42",
+            "gewinner": "Team 1",
+            "team1": [
+                "Watson",
+                "PXLHC",
+                "Van Hagen"
+            ],
+            "team2": [
+                "Inferno BANANE",
+                "Clausiil",
+                "Fat Top Man"
+            ]
+        },
+        {
+            "datum": "28.05.2026 17:38",
+            "gewinner": "Team 2",
+            "team1": [
+                "Clausiil",
+                "Fat Top Man",
+                "Van Hagen"
+            ],
+            "team2": [
+                "Watson",
+                "PXLHC",
+                "STYP"
+            ]
+        }
+    ]
+}
