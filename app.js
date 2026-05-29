@@ -21,7 +21,39 @@ async function supabaseFetch(table) {
   if (!response.ok) throw new Error(`Supabase Fehler bei ${table}`);
   return await response.json();
 }
+async function addPlayer() {
+  const input = document.getElementById("newPlayerName");
 
+  const name = input.value.trim();
+
+  if (!name) {
+    alert("Bitte einen Namen eingeben.");
+    return;
+  }
+
+  if (currentPlayersObj[name]) {
+    alert("Spieler existiert bereits.");
+    return;
+  }
+
+  try {
+    await supabaseInsert("players", {
+      name: name,
+      wins: 0,
+      losses: 0,
+      elo: 1200
+    });
+
+    input.value = "";
+
+    await loadDashboard();
+
+    alert(`${name} wurde hinzugefügt.`);
+  } catch (error) {
+    console.error(error);
+    alert("Spieler konnte nicht angelegt werden.");
+  }
+}
 async function supabaseInsert(table, data) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
     method: "POST",
