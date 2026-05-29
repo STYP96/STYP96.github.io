@@ -584,7 +584,6 @@ const byEnemies = Object.entries(enemies)
     details.innerHTML = `
       <summary class="teammate-summary">
         <span>${escapeHtml(player)}</span>
-        <small>${partnerList.length} Mitspieler</small>
       </summary>
 
       <div class="teammate-columns">
