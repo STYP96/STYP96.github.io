@@ -14,7 +14,32 @@
   --muted: #94A3B8;
 }
 
-* {
+* .player-card-name,
+.player-name-center {
+  position: absolute;
+  left: 62px;
+  right: 88px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: block;
+
+  color: #F8FAFC;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+.player-card-name span,
+.player-name-center span {
+  display: block;
+  margin-left: 42px;
+}
   box-sizing: border-box;
 }
 
