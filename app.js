@@ -57,6 +57,7 @@ async function loadDashboard() {
     renderRanking(players);
     renderMatches(matches, playersObj);
     renderStats(players);
+    renderTeammateStats(playersObj, matches);
   } catch (error) {
     document.querySelector(".content").innerHTML = `
       <div class="card">
