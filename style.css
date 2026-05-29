@@ -381,14 +381,16 @@ nav a:hover {
   margin-bottom: 10px;
 }
 
-.teammate-grid,
-.teammate-columns {
+.teammate-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
 .teammate-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
   padding: 14px;
 }
 
@@ -435,7 +437,7 @@ nav a:hover {
 }
 
 .teammate-details[open] .teammate-summary::after {
-  transform: rotate(180deg);
+  transform: rotate(90deg);
 }
 .teammate-summary::-webkit-details-marker {
   display: none;
