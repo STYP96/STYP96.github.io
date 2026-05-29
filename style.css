@@ -1091,3 +1091,50 @@ nav a:hover {
 .player-check {
   overflow: visible !important;
 }
+/* FIX: Teamgenerator Icon feste Position + kleinerer Name */
+
+.player-card-name,
+.player-name-center {
+  position: absolute;
+  left: 62px;
+  right: 88px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: block;
+
+  color: #F8FAFC;
+  font-size: 12.5px;
+  font-weight: 800;
+  text-align: center;
+
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.15;
+}
+
+.player-card-name .summoner-icon,
+.player-name-center .summoner-icon {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  max-width: 34px !important;
+  max-height: 34px !important;
+
+  border-radius: 50% !important;
+  object-fit: cover !important;
+}
+
+.player-card-name span,
+.player-name-center span {
+  display: block;
+  margin-left: 42px;
+  text-align: center;
+}
