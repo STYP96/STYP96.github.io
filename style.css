@@ -581,10 +581,10 @@ nav a:hover {
   font-size: 14px;
   font-weight: 800;
   text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.1;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.15;
 }
 
 .player-card-elo,
@@ -592,7 +592,7 @@ nav a:hover {
   position: absolute;
   top: 12px;
   right: 14px;
-  color: #F8FAFC;
+  color: #A78BFA;
   font-size: 14px;
   font-weight: 800;
   white-space: nowrap;
