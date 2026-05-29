@@ -685,10 +685,14 @@ nav a:hover {
 }
 
 .team-one {
+  flex: 1;
+  max-width: 600px;
   border-color: #1E90FF;
 }
 
 .team-two {
+  flex: 1;
+  max-width: 600px;
   border-color: #E11D48;
 }
 
@@ -845,10 +849,10 @@ nav a:hover {
   }
 }
 .generated-teams {
-    display: grid;
-    grid-template-columns: 1fr 180px 1fr;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
     gap: 20px;
-    align-items: center;
 }
 
 .generator-center {
