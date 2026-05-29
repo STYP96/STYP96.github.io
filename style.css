@@ -910,3 +910,104 @@ nav a:hover {
   align-items: center;
   gap: 8px;
 }
+/* Summoner Icons */
+
+.summoner-icon,
+.summoner-icon-small {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid transparent;
+  transition: all 0.25s ease;
+}
+
+/* Leon */
+
+.rank-leon {
+  border-color: #ff69b4;
+}
+
+/* Iron */
+
+.rank-iron {
+  border-color: #6b7280;
+}
+
+/* Bronze */
+
+.rank-bronze {
+  border-color: #cd7f32;
+}
+
+/* Silver */
+
+.rank-silver {
+  border-color: #c0c0c0;
+}
+
+/* Gold */
+
+.rank-gold {
+  border-color: #ffd700;
+}
+
+/* Platin */
+
+.rank-platin {
+  border-color: #4fd1c5;
+}
+
+/* Emerald */
+
+.rank-emerald {
+  border-color: #10b981;
+}
+
+/* Diamond */
+
+.rank-diamond {
+  border-color: #60a5fa;
+}
+
+/* Master */
+
+.rank-master {
+  border-color: #a855f7;
+  box-shadow: 0 0 10px #a855f7;
+}
+
+/* Grandmaster */
+
+.rank-grandmaster {
+  border-color: #ef4444;
+  box-shadow: 0 0 12px #ef4444;
+}
+
+/* Challenger */
+
+.rank-challenger {
+  border-color: #ffffff;
+  animation: challengerGlow 2s infinite alternate;
+}
+
+@keyframes challengerGlow {
+  from {
+    box-shadow:
+      0 0 6px #ffffff,
+      0 0 12px #60a5fa;
+  }
+
+  to {
+    box-shadow:
+      0 0 10px #ffffff,
+      0 0 20px #60a5fa,
+      0 0 30px #ffffff;
+  }
+}
+
+.ranking-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
