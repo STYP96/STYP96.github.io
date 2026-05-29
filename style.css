@@ -363,4 +363,16 @@ nav a:hover {
   .teams {
     grid-template-columns: 1fr;
   }
+  .rank-icon-wrap {
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+}
+
+.rank-icon {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+}
 }
