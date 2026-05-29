@@ -524,12 +524,11 @@ function renderRanking(players) {
           class="summoner-icon-small rank-${rank.toLowerCase()}"
           src="${getProfileIconUrl(p.profile_icon_id)}"
           alt=""
-        >      
+        >
       </div>
 
       <div>
         <div class="ranking-player">
-          <img class="summoner-icon-small" src="${getProfileIconUrl(p.profile_icon_id)}" alt="">
           <span class="player-name">${escapeHtml(p.name)}</span>
         </div>
         <div class="player-sub">${rank} | WR: ${winrate(p.wins, p.losses)}% | Games: ${p.wins + p.losses}</div>
