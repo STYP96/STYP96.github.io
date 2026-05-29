@@ -856,3 +856,24 @@ nav a:hover {
     max-width: none;
   }
 }
+.player-name-center {
+  position: absolute !important;
+  left: 72px !important;
+  right: 95px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  text-align: left !important;
+
+  color: #F8FAFC !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: none !important;
+}
+
+.custom-check {
+  left: 12px !important;
+}
