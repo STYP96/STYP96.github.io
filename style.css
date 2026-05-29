@@ -881,8 +881,12 @@ nav a:hover {
 
 /* Summoner Icons */
 
+/* Summoner Icons */
+
 .summoner-icon,
-.summoner-icon-small {
+.summoner-icon-small,
+.generated-icon,
+.match-player-icon {
   width: 44px !important;
   height: 44px !important;
 
@@ -893,7 +897,7 @@ nav a:hover {
   max-height: 44px !important;
 
   border-radius: 50% !important;
-  overflow: visible;
+  overflow: hidden !important;
 
   object-fit: cover !important;
   object-position: center center !important;
@@ -905,6 +909,35 @@ nav a:hover {
   transition: all 0.25s ease;
 }
 
+.generated-icon,
+.match-player-icon {
+  width: 28px !important;
+  height: 28px !important;
+
+  min-width: 28px !important;
+  min-height: 28px !important;
+
+  max-width: 28px !important;
+  max-height: 28px !important;
+}
+.generated-player,
+.match-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.generated-player span,
+.match-player span {
+  white-space: nowrap;
+}
+
+.generated-player-elo {
+  margin-left: auto;
+  color: #A78BFA;
+  font-weight: 700;
+}
 .rank-icon-wrap .summoner-icon-small {
   width: 44px !important;
   height: 44px !important;
