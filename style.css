@@ -1032,3 +1032,62 @@ nav a:hover {
 .summoner-icon-small {
   overflow: visible;
 }
+/* FIX: Ranking-Icon nicht abschneiden */
+.rank-row {
+  overflow: visible !important;
+}
+
+.rank-icon-wrap {
+  width: 58px !important;
+  height: 58px !important;
+  max-width: 58px !important;
+  max-height: 58px !important;
+  overflow: visible !important;
+}
+
+.rank-icon-wrap .summoner-icon-small {
+  width: 44px !important;
+  height: 44px !important;
+  margin-right: 0 !important;
+}
+
+/* FIX: kein doppeltes Icon neben Namen */
+.ranking-player img {
+  display: none !important;
+}
+
+/* FIX: Teamgenerator Name sauber mittig neben Icon */
+.player-card-name,
+.player-name-center {
+  position: absolute;
+  left: 62px;
+  right: 88px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  color: #F8FAFC;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.15;
+}
+
+.player-card-name .summoner-icon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+/* verhindert abgeschnittene Kreise im Teamgenerator */
+.player-check {
+  overflow: visible !important;
+}
