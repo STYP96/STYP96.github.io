@@ -1016,3 +1016,19 @@ nav a:hover {
   align-items: center;
   gap: 8px;
 }
+.rank-row {
+  overflow: visible;
+}
+
+.rank-icon-wrap {
+  overflow: visible !important;
+}
+
+.ranking-player {
+  overflow: visible;
+}
+
+.summoner-icon,
+.summoner-icon-small {
+  overflow: visible;
+}
