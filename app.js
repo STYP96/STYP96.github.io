@@ -1,5 +1,7 @@
 const SUPABASE_URL = "https://xzegzgckmybaevjdwzti.supabase.co";
 const SUPABASE_KEY = "sb_publishable_1GmRO60YM3XW_EaBf8WQrg_rkA9hrFi";
+const RIOT_API_KEY = "DEIN_RIOT_API_KEY";
+const DDRAGON_VERSION = "15.12.1";
 
 const ADMIN_PASSWORD = "kotbatzen";
 
@@ -9,6 +11,50 @@ let currentPlayersObj = {};
 let currentMatches = [];
 let generatedTeam1 = [];
 let generatedTeam2 = [];
+
+function getProfileIconUrl(iconId) {
+  if (!iconId) return "summoner_icons/default.png";
+  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${iconId}.png`;
+}
+
+async function getRiotProfileData(gameName, tagLine) {
+  const accountResponse = await fetch(
+    `https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`,
+    {
+      headers: {
+        "X-Riot-Token": RIOT_API_KEY
+      }
+    }
+  );
+
+  if (!accountResponse.ok) {
+    throw new Error("Riot Account wurde nicht gefunden.");
+  }
+
+  const accountData = await accountResponse.json();
+
+  const summonerResponse = await fetch(
+    `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${encodeURIComponent(accountData.puuid)}`,
+    {
+      headers: {
+        "X-Riot-Token": RIOT_API_KEY
+      }
+    }
+  );
+
+  if (!summonerResponse.ok) {
+    throw new Error("Summoner-Daten konnten nicht geladen werden.");
+  }
+
+  const summonerData = await summonerResponse.json();
+
+  return {
+    puuid: accountData.puuid,
+    gameName: accountData.gameName,
+    tagLine: accountData.tagLine,
+    profileIconId: summonerData.profileIconId
+  };
+}
 
 async function supabaseFetch(table) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
@@ -21,39 +67,7 @@ async function supabaseFetch(table) {
   if (!response.ok) throw new Error(`Supabase Fehler bei ${table}`);
   return await response.json();
 }
-async function addPlayer() {
-  const input = document.getElementById("newPlayerName");
 
-  const name = input.value.trim();
-
-  if (!name) {
-    alert("Bitte einen Namen eingeben.");
-    return;
-  }
-
-  if (currentPlayersObj[name]) {
-    alert("Spieler existiert bereits.");
-    return;
-  }
-
-  try {
-    await supabaseInsert("players", {
-      name: name,
-      wins: 0,
-      losses: 0,
-      elo: 1200
-    });
-
-    input.value = "";
-
-    await loadDashboard();
-
-    alert(`${name} wurde hinzugefügt.`);
-  } catch (error) {
-    console.error(error);
-    alert("Spieler konnte nicht angelegt werden.");
-  }
-}
 async function supabaseInsert(table, data) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
     method: "POST",
@@ -106,11 +120,83 @@ async function supabaseDeleteMatch(matchId) {
   const deletedRows = await response.json();
 
   if (!deletedRows || deletedRows.length === 0) {
-    console.error("Delete fehlgeschlagen. Keine Zeile gelöscht:", deletedRows);
     throw new Error("Kein Match gelöscht. Prüfe ID oder Supabase DELETE Policy.");
   }
 
   return deletedRows;
+}
+
+async function addPlayer() {
+  if (!isAdmin) {
+    alert("Nur im Admin-Modus möglich.");
+    return;
+  }
+
+  const input = document.getElementById("newPlayerName");
+  const name = input.value.trim();
+
+  if (!name) {
+    alert("Bitte einen Namen eingeben.");
+    return;
+  }
+
+  if (currentPlayersObj[name]) {
+    alert("Spieler existiert bereits.");
+    return;
+  }
+
+  try {
+    await supabaseInsert("players", {
+      name,
+      wins: 0,
+      losses: 0,
+      elo: 1200,
+      riot_game_name: null,
+      riot_tag_line: null,
+      riot_puuid: null,
+      profile_icon_id: null
+    });
+
+    input.value = "";
+
+    await loadDashboard();
+
+    alert(`${name} wurde hinzugefügt.`);
+  } catch (error) {
+    console.error(error);
+    alert("Spieler konnte nicht angelegt werden.");
+  }
+}
+
+async function attachRiotAccount(playerName) {
+  if (!isAdmin) {
+    alert("Nur im Admin-Modus möglich.");
+    return;
+  }
+
+  const gameName = prompt(`Riot Name für ${playerName}:`);
+  if (!gameName) return;
+
+  const tagLine = prompt(`Tag für ${gameName}, z.B. EUW:`);
+  if (!tagLine) return;
+
+  try {
+    const riotData = await getRiotProfileData(gameName.trim(), tagLine.trim());
+
+    await supabaseUpdatePlayer(playerName, {
+      riot_game_name: riotData.gameName,
+      riot_tag_line: riotData.tagLine,
+      riot_puuid: riotData.puuid,
+      profile_icon_id: riotData.profileIconId
+    });
+
+    await loadDashboard();
+
+    alert(`Summoner Icon für ${playerName} wurde gespeichert.`);
+  } catch (error) {
+    console.error(error);
+    alert("Riot Account konnte nicht gefunden oder gespeichert werden.");
+  }
 }
 
 function rankFromElo(elo) {
@@ -167,7 +253,11 @@ async function loadDashboard() {
     currentPlayersObj[p.name] = {
       wins: p.wins ?? 0,
       losses: p.losses ?? 0,
-      elo: p.elo ?? 1200
+      elo: p.elo ?? 1200,
+      profile_icon_id: p.profile_icon_id ?? null,
+      riot_game_name: p.riot_game_name ?? null,
+      riot_tag_line: p.riot_tag_line ?? null,
+      riot_puuid: p.riot_puuid ?? null
     };
   });
 
@@ -175,7 +265,11 @@ async function loadDashboard() {
     name: p.name,
     wins: p.wins ?? 0,
     losses: p.losses ?? 0,
-    elo: p.elo ?? 1200
+    elo: p.elo ?? 1200,
+    profile_icon_id: p.profile_icon_id ?? null,
+    riot_game_name: p.riot_game_name ?? null,
+    riot_tag_line: p.riot_tag_line ?? null,
+    riot_puuid: p.riot_puuid ?? null
   }));
 
   currentMatches = matchesData
@@ -227,11 +321,20 @@ function renderPlayerSelection(players) {
 
       <span class="custom-check"></span>
 
-      <span class="player-card-name">${escapeHtml(player.name)}</span>
+      <span class="player-card-name">
+        <img class="summoner-icon" src="${getProfileIconUrl(player.profile_icon_id)}" alt="">
+        <span>${escapeHtml(player.name)}</span>
+      </span>
 
       <span class="player-card-elo">${player.elo} Elo</span>
 
       <span class="player-card-wr">${winrate(player.wins, player.losses)}% WR</span>
+
+      ${
+        isAdmin
+          ? `<button type="button" class="riot-link-btn" onclick="event.preventDefault(); event.stopPropagation(); attachRiotAccount('${escapeJs(player.name)}')">🔗</button>`
+          : ""
+      }
     `;
 
     list.appendChild(label);
@@ -278,11 +381,17 @@ function renderGeneratedTeams() {
   team2Chance.textContent = `${c2}% Gewinnchance`;
 
   team1List.innerHTML = generatedTeam1
-    .map(name => `<div>${escapeHtml(name)} · ${currentPlayersObj[name].elo} Elo</div>`)
+    .map(name => {
+      const p = currentPlayersObj[name];
+      return `<div>${escapeHtml(name)} · ${p?.elo ?? 1200} Elo</div>`;
+    })
     .join("");
 
   team2List.innerHTML = generatedTeam2
-    .map(name => `<div>${escapeHtml(name)} · ${currentPlayersObj[name].elo} Elo</div>`)
+    .map(name => {
+      const p = currentPlayersObj[name];
+      return `<div>${escapeHtml(name)} · ${p?.elo ?? 1200} Elo</div>`;
+    })
     .join("");
 }
 
@@ -338,7 +447,7 @@ function adminLogin() {
   if (input === ADMIN_PASSWORD) {
     isAdmin = true;
     alert("Admin-Modus aktiviert.");
-    renderMatches(currentMatches, currentPlayersObj);
+    loadDashboard();
   } else {
     alert("Falsches Passwort.");
   }
@@ -364,8 +473,6 @@ async function deleteMatch(matchId) {
   const losers = match.gewinner === "Team 1" ? match.team2 : match.team1;
 
   try {
-    console.log("Lösche Match-ID:", matchId);
-
     await supabaseDeleteMatch(matchId);
 
     for (const name of winners) {
@@ -392,7 +499,7 @@ async function deleteMatch(matchId) {
     await loadDashboard();
   } catch (error) {
     console.error(error);
-    alert("Fehler beim Löschen des Matches. Es wurden keine Stats zurückgerechnet, wenn das Match nicht gelöscht werden konnte.");
+    alert("Fehler beim Löschen des Matches.");
   }
 }
 
@@ -407,13 +514,19 @@ function renderRanking(players) {
 
     row.innerHTML = `
       <div class="place">${medal(index + 1)}</div>
+
       <div class="rank-icon-wrap">
         <img class="rank-icon" src="/rank_icons/${rank}.png" alt="${rank}">
       </div>
+
       <div>
-        <div class="player-name">${escapeHtml(p.name)}</div>
+        <div class="ranking-player">
+          <img class="summoner-icon-small" src="${getProfileIconUrl(p.profile_icon_id)}" alt="">
+          <span class="player-name">${escapeHtml(p.name)}</span>
+        </div>
         <div class="player-sub">${rank} | WR: ${winrate(p.wins, p.losses)}% | Games: ${p.wins + p.losses}</div>
       </div>
+
       <div class="elo">${p.elo} Elo</div>
       <div class="wl">${p.wins} - ${p.losses}</div>
     `;
@@ -516,6 +629,7 @@ function renderTeammateStats(playersObj, matches) {
 
   Object.keys(playersObj).sort().forEach(player => {
     const partners = {};
+    const enemies = {};
 
     matches.forEach(match => {
       const team = match.team1.includes(player)
@@ -524,19 +638,32 @@ function renderTeammateStats(playersObj, matches) {
           ? match.team2
           : null;
 
+      const enemyTeam = match.team1.includes(player)
+        ? match.team2
+        : match.team2.includes(player)
+          ? match.team1
+          : null;
+
       const won = match.team1.includes(player)
         ? match.gewinner === "Team 1"
         : match.gewinner === "Team 2";
 
-      if (!team) return;
+      if (team) {
+        team.forEach(partner => {
+          if (partner === player) return;
+          if (!partners[partner]) partners[partner] = { games: 0, wins: 0, losses: 0 };
+          partners[partner].games++;
+          if (won) partners[partner].wins++;
+          else partners[partner].losses++;
+        });
+      }
 
-      team.forEach(partner => {
-        if (partner === player) return;
-        if (!partners[partner]) partners[partner] = { games: 0, wins: 0, losses: 0 };
-        partners[partner].games++;
-        if (won) partners[partner].wins++;
-        else partners[partner].losses++;
-      });
+      if (enemyTeam) {
+        enemyTeam.forEach(enemy => {
+          if (!enemies[enemy]) enemies[enemy] = 0;
+          enemies[enemy]++;
+        });
+      }
     });
 
     const partnerList = Object.entries(partners).map(([name, s]) => ({
@@ -548,35 +675,12 @@ function renderTeammateStats(playersObj, matches) {
     }));
 
     if (!partnerList.length) return;
-    const enemies = {};
 
-matches.forEach(match => {
-
-  let enemyTeam = null;
-
-  if (match.team1.includes(player)) {
-    enemyTeam = match.team2;
-  } else if (match.team2.includes(player)) {
-    enemyTeam = match.team1;
-  }
-
-  if (!enemyTeam) return;
-
-  enemyTeam.forEach(enemy => {
-    if (!enemies[enemy]) {
-      enemies[enemy] = 0;
-    }
-
-    enemies[enemy]++;
-  });
-
-});
-
-const byEnemies = Object.entries(enemies)
-  .map(([name, games]) => ({ name, games }))
-  .sort((a, b) => b.games - a.games);
     const byGames = [...partnerList].sort((a, b) => b.games - a.games || b.wr - a.wr);
     const byWinrate = [...partnerList].sort((a, b) => b.wr - a.wr || b.games - a.games);
+    const byEnemies = Object.entries(enemies)
+      .map(([name, games]) => ({ name, games }))
+      .sort((a, b) => b.games - a.games || a.name.localeCompare(b.name));
 
     const details = document.createElement("details");
     details.className = "teammate-details";
@@ -587,21 +691,21 @@ const byEnemies = Object.entries(enemies)
       </summary>
 
       <div class="teammate-columns">
-  <div class="teammate-column">
-    <h3>Am häufigsten gespielt mit</h3>
-    ${renderPartnerRows(byGames, "games")}
-  </div>
+        <div class="teammate-column">
+          <h3>Am häufigsten gespielt mit</h3>
+          ${renderPartnerRows(byGames, "games")}
+        </div>
 
-  <div class="teammate-column">
-    <h3>Höchste Winrate mit</h3>
-    ${renderPartnerRows(byWinrate, "winrate")}
-  </div>
+        <div class="teammate-column">
+          <h3>Höchste Winrate mit</h3>
+          ${renderPartnerRows(byWinrate, "winrate")}
+        </div>
 
-  <div class="teammate-column">
-    <h3>Am häufigsten gespielt gegen</h3>
-    ${renderEnemyRows(byEnemies)}
-  </div>
-</div>
+        <div class="teammate-column">
+          <h3>Am häufigsten gespielt gegen</h3>
+          ${renderEnemyRows(byEnemies)}
+        </div>
+      </div>
     `;
 
     container.appendChild(details);
@@ -627,6 +731,7 @@ function renderPartnerRows(list, mode) {
     `;
   }).join("");
 }
+
 function renderEnemyRows(list) {
   return list.map((item, index) => {
     return `
@@ -638,17 +743,18 @@ function renderEnemyRows(list) {
           <span>${item.games} Spiele gegeneinander</span>
         </div>
 
-        <div class="partner-wr">
+        <div class="partner-wr games">
           ${item.games}x
         </div>
       </div>
     `;
   }).join("");
 }
+
 function bindButtons() {
   document.getElementById("adminBtn")?.addEventListener("click", adminLogin);
-  document.getElementById("addPlayerBtn")
-  ?.addEventListener("click", addPlayer);
+  document.getElementById("addPlayerBtn")?.addEventListener("click", addPlayer);
+
   document.getElementById("selectAllBtn")?.addEventListener("click", () => {
     document.querySelectorAll("#playerSelectList input").forEach(cb => cb.checked = true);
   });
@@ -681,6 +787,15 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function escapeJs(value) {
+  return String(value)
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'")
+    .replaceAll('"', '\\"')
+    .replaceAll("\n", "\\n")
+    .replaceAll("\r", "\\r");
 }
 
 bindButtons();
