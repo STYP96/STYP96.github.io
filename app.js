@@ -180,30 +180,18 @@ function generateTeams() {
     return;
   }
 
-  const maxTeam1Size = Math.ceil(selected.length / 2);
-  const maxTeam2Size = Math.floor(selected.length / 2);
+  const shuffled = [...selected];
 
-  const sorted = [...selected]
-    .sort(() => Math.random() - 0.5)
-    .sort((a, b) => (currentPlayersObj[b]?.elo ?? 1200) - (currentPlayersObj[a]?.elo ?? 1200));
+  // Fisher-Yates Shuffle (echtes Random)
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
 
-  generatedTeam1 = [];
-  generatedTeam2 = [];
+  const splitPoint = Math.ceil(shuffled.length / 2);
 
-  sorted.forEach(player => {
-    const sumElo1 = generatedTeam1.reduce((sum, name) => sum + (currentPlayersObj[name]?.elo ?? 1200), 0);
-    const sumElo2 = generatedTeam2.reduce((sum, name) => sum + (currentPlayersObj[name]?.elo ?? 1200), 0);
-
-    if (generatedTeam1.length >= maxTeam1Size) {
-      generatedTeam2.push(player);
-    } else if (generatedTeam2.length >= maxTeam2Size) {
-      generatedTeam1.push(player);
-    } else if (sumElo1 <= sumElo2) {
-      generatedTeam1.push(player);
-    } else {
-      generatedTeam2.push(player);
-    }
-  });
+  generatedTeam1 = shuffled.slice(0, splitPoint);
+  generatedTeam2 = shuffled.slice(splitPoint);
 
   renderGeneratedTeams();
 }
