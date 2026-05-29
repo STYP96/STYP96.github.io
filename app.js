@@ -1,6 +1,21 @@
 const SUPABASE_URL = "https://xzegzgckmybaevjdwzti.supabase.co";
 const SUPABASE_KEY = "sb_publishable_1GmRO60YM3XW_EaBf8WQrg_rkA9hrFi";
 
+async function supabaseFetch(table) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Supabase Fehler bei ${table}`);
+  }
+
+  return await response.json();
+}
+
 function rankFromElo(elo) {
   if (elo < 800) return "Leon";
   if (elo < 1000) return "Iron";
@@ -21,9 +36,9 @@ function winrate(wins, losses) {
   return ((wins / games) * 100).toFixed(1);
 }
 
-function averageElo(names, players) {
+function averageElo(names, playersObj) {
   if (!names || names.length === 0) return 0;
-  const sum = names.reduce((acc, name) => acc + (players[name]?.elo ?? 1200), 0);
+  const sum = names.reduce((acc, name) => acc + (playersObj[name]?.elo ?? 1200), 0);
   return Math.round(sum / names.length);
 }
 
@@ -36,18 +51,34 @@ function medal(place) {
 
 async function loadDashboard() {
   try {
-    const response = await fetch(`${DATA_FILE}?v=${Date.now()}`);
-    const data = await response.json();
+    const playersData = await supabaseFetch("players");
+    const matchesData = await supabaseFetch("matches");
 
-    const playersObj = data.spieler || {};
-    const matches = data.historie || [];
+    const playersObj = {};
+    playersData.forEach(p => {
+      playersObj[p.name] = {
+        wins: p.wins ?? 0,
+        losses: p.losses ?? 0,
+        elo: p.elo ?? 1200
+      };
+    });
 
-    const players = Object.entries(playersObj).map(([name, d]) => ({
-      name,
-      wins: d.wins ?? 0,
-      losses: d.losses ?? 0,
-      elo: d.elo ?? 1200
+    const players = playersData.map(p => ({
+      name: p.name,
+      wins: p.wins ?? 0,
+      losses: p.losses ?? 0,
+      elo: p.elo ?? 1200
     }));
+
+    const matches = matchesData
+      .map(m => ({
+        id: m.id,
+        datum: m.datum,
+        gewinner: m.winner,
+        team1: m.team1 || [],
+        team2: m.team2 || []
+      }))
+      .sort((a, b) => new Date(b.datum) - new Date(a.datum));
 
     players.sort((a, b) => {
       if (b.elo !== a.elo) return b.elo - a.elo;
@@ -67,7 +98,7 @@ async function loadDashboard() {
     document.querySelector(".content").innerHTML = `
       <div class="card">
         <h2 style="color:#E11D48">Fehler beim Laden</h2>
-        <p>Es ist ein Fehler beim Laden oder Verarbeiten der Daten aufgetreten.</p>
+        <p>Supabase-Daten konnten nicht geladen werden.</p>
       </div>
     `;
   }
@@ -88,11 +119,6 @@ function renderOverview(players, matches) {
 function renderRanking(players) {
   const list = document.getElementById("rankingList");
   list.innerHTML = "";
-
-  if (players.length === 0) {
-    list.innerHTML = `<div class="empty">Noch keine Spieler vorhanden.</div>`;
-    return;
-  }
 
   players.forEach((p, index) => {
     const rank = rankFromElo(p.elo);
@@ -122,11 +148,11 @@ function renderRanking(players) {
   });
 }
 
-function renderMatches(matches, players) {
+function renderMatches(matches, playersObj) {
   const list = document.getElementById("matchList");
   list.innerHTML = "";
 
-  if (matches.length === 0) {
+  if (!matches.length) {
     list.innerHTML = `<div class="empty">Noch keine Matches gespeichert.</div>`;
     return;
   }
@@ -142,17 +168,17 @@ function renderMatches(matches, players) {
     card.innerHTML = `
       <div class="match-top">
         <div class="winner">${winnerText}</div>
-        <div class="date">${escapeHtml(match.datum || "")}</div>
+        <div class="date">${formatDate(match.datum)}</div>
       </div>
 
       <div class="teams">
         <div class="team ${match.gewinner === "Team 1" ? "winner-team" : "loser-team"}">
-          <div class="team-title">Team 1 · Ø ${averageElo(t1, players)} Elo</div>
+          <div class="team-title">Team 1 · Ø ${averageElo(t1, playersObj)} Elo</div>
           <div class="players">${t1.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
         </div>
 
         <div class="team ${match.gewinner === "Team 2" ? "winner-team" : "loser-team"}">
-          <div class="team-title">Team 2 · Ø ${averageElo(t2, players)} Elo</div>
+          <div class="team-title">Team 2 · Ø ${averageElo(t2, playersObj)} Elo</div>
           <div class="players">${t2.map(escapeHtml).join("<br>") || "Keine Spieler"}</div>
         </div>
       </div>
@@ -165,7 +191,7 @@ function renderMatches(matches, players) {
 function renderStats(players) {
   const list = document.getElementById("statsList");
 
-  if (players.length === 0) {
+  if (!players.length) {
     list.innerHTML = `<div class="empty">Noch keine Statistiken vorhanden.</div>`;
     return;
   }
@@ -207,7 +233,7 @@ function renderTeammateStats(playersObj, matches) {
 
   const playerNames = Object.keys(playersObj).sort();
 
-  if (playerNames.length === 0 || matches.length === 0) {
+  if (!playerNames.length || !matches.length) {
     container.innerHTML = `<div class="empty">Noch keine Mitspieler-Statistiken vorhanden.</div>`;
     return;
   }
@@ -237,20 +263,13 @@ function renderTeammateStats(playersObj, matches) {
         if (partner === player) return;
 
         if (!partners[partner]) {
-          partners[partner] = {
-            games: 0,
-            wins: 0,
-            losses: 0
-          };
+          partners[partner] = { games: 0, wins: 0, losses: 0 };
         }
 
         partners[partner].games++;
 
-        if (won) {
-          partners[partner].wins++;
-        } else {
-          partners[partner].losses++;
-        }
+        if (won) partners[partner].wins++;
+        else partners[partner].losses++;
       });
     });
 
@@ -266,7 +285,7 @@ function renderTeammateStats(playersObj, matches) {
       };
     });
 
-    if (partnerList.length === 0) return;
+    if (!partnerList.length) return;
 
     const byGames = [...partnerList].sort((a, b) => {
       if (b.games !== a.games) return b.games - a.games;
@@ -305,10 +324,6 @@ function renderTeammateStats(playersObj, matches) {
 }
 
 function renderPartnerRows(list, mode = "winrate") {
-  if (!list.length) {
-    return `<div class="empty">Keine gemeinsamen Spiele.</div>`;
-  }
-
   return list.map((item, index) => {
     const isGamesMode = mode === "games";
     const mainValue = isGamesMode ? `${item.games}x` : `${item.wr.toFixed(1)}%`;
@@ -329,6 +344,24 @@ function renderPartnerRows(list, mode = "winrate") {
       </div>
     `;
   }).join("");
+}
+
+function formatDate(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return escapeHtml(value);
+  }
+
+  return date.toLocaleString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
 function escapeHtml(value) {
