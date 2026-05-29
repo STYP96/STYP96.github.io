@@ -1082,3 +1082,60 @@ nav a:hover {
     max-width: none;
   }
 }
+.match-player-icon.rank-leon,
+.generated-icon.rank-leon {
+  border-color: #ff69b4 !important;
+}
+
+.match-player-icon.rank-iron,
+.generated-icon.rank-iron {
+  border-color: #6b7280 !important;
+}
+
+.match-player-icon.rank-bronze,
+.generated-icon.rank-bronze {
+  border-color: #cd7f32 !important;
+}
+
+.match-player-icon.rank-silver,
+.generated-icon.rank-silver {
+  border-color: #c0c0c0 !important;
+}
+
+.match-player-icon.rank-gold,
+.generated-icon.rank-gold {
+  border-color: #ffd700 !important;
+}
+
+.match-player-icon.rank-platin,
+.generated-icon.rank-platin {
+  border-color: #4fd1c5 !important;
+}
+
+.match-player-icon.rank-emerald,
+.generated-icon.rank-emerald {
+  border-color: #10b981 !important;
+}
+
+.match-player-icon.rank-diamond,
+.generated-icon.rank-diamond {
+  border-color: #60a5fa !important;
+}
+
+.match-player-icon.rank-master,
+.generated-icon.rank-master {
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 8px #a855f7;
+}
+
+.match-player-icon.rank-grandmaster,
+.generated-icon.rank-grandmaster {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+.match-player-icon.rank-challenger,
+.generated-icon.rank-challenger {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 10px #60a5fa;
+}
