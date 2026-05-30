@@ -436,7 +436,7 @@ function renderGeneratedTeams() {
     const p = currentPlayersObj[name];
 
     return `
-      <div class="generated-player">
+      <div class="generated-player reveal-player">
         <img
           class="generated-icon rank-${rankFromElo(p?.elo ?? 1200).toLowerCase()}"
           src="${getProfileIconUrl(p?.profile_icon_id)}"
@@ -458,19 +458,23 @@ function renderGeneratedTeams() {
 
   for (let i = 0; i < maxPlayers; i++) {
     if (generatedTeam1[i]) {
-      picks.push({
-        list: team1List,
-        name: generatedTeam1[i]
-      });
+      picks.push({ list: team1List, name: generatedTeam1[i] });
     }
 
     if (generatedTeam2[i]) {
-      picks.push({
-        list: team2List,
-        name: generatedTeam2[i]
-      });
+      picks.push({ list: team2List, name: generatedTeam2[i] });
     }
   }
+
+  picks.forEach((pick, index) => {
+    setTimeout(() => {
+      pick.list.insertAdjacentHTML(
+        "beforeend",
+        createGeneratedPlayerHTML(pick.name)
+      );
+    }, index * 500);
+  });
+}
 
   let index = 0;
 
