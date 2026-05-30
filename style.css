@@ -1261,4 +1261,15 @@ nav a:hover {
     left: 66px !important;
   }
 }
+.generated-player {
+  opacity: 0;
+  transform: translateY(10px) scale(0.96);
+  animation: playerReveal 0.35s ease forwards;
+}
 
+@keyframes playerReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
