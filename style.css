@@ -619,50 +619,52 @@ nav a:hover {
 .player-name-center {
   position: absolute;
   left: 62px;
-  right: 88px;
+  right: 78px;
   top: 50%;
   transform: translateY(-50%);
 
-  display: flex;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
   align-items: center;
-  justify-content: flex-start;
-
-  color: #F8FAFC;
-  font-size: 12px;
-  font-weight: 800;
-  text-align: left;
-
-  white-space: nowrap;
-  overflow: hidden;
-  line-height: 1.15;
-}
-
-.player-card-name,
-.player-name-center {
-  position: absolute;
-  left: 60px;
-  right: 90px;
-  top: 50%;
-  transform: translateY(-50%);
+  gap: 8px;
 
   color: #F8FAFC;
   font-size: 11px;
   font-weight: 800;
-
-  text-align: center;
+  text-align: left;
 
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
   line-height: 1;
+}
+
+.player-card-name .summoner-icon,
+.player-name-center .summoner-icon {
+  position: static !important;
+  transform: none !important;
+
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  max-width: 34px !important;
+  max-height: 34px !important;
+
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  flex-shrink: 0;
 }
 
 .player-card-name span,
 .player-name-center span {
   display: block;
-  width: 100%;
-  margin-left: 0;
-  text-align: center;
+  min-width: 0;
+
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
+
+  text-align: left;
 }
 
 .player-card-elo,
