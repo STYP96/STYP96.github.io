@@ -637,34 +637,32 @@ nav a:hover {
   line-height: 1.15;
 }
 
-.player-card-name span,
-.player-name-center span {
-  display: inline-block;
-  white-space: nowrap;
-  word-break: keep-all;
-  overflow-wrap: normal;
-  margin-left: 42px;
-}
-
-.player-card-name .summoner-icon,
-.player-name-center .summoner-icon {
+.player-card-name,
+.player-name-center {
   position: absolute;
-  left: 0;
+  left: 60px;
+  right: 90px;
   top: 50%;
   transform: translateY(-50%);
 
-  width: 34px !important;
-  height: 34px !important;
-  min-width: 34px !important;
-  min-height: 34px !important;
-  max-width: 34px !important;
-  max-height: 34px !important;
+  color: #F8FAFC;
+  font-size: 11px;
+  font-weight: 800;
 
-  border-radius: 50% !important;
-  overflow: hidden !important;
+  text-align: center;
 
-  object-fit: cover !important;
-  object-position: center center !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+.player-card-name span,
+.player-name-center span {
+  display: block;
+  width: 100%;
+  margin-left: 0;
+  text-align: center;
 }
 
 .player-card-elo,
