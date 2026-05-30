@@ -891,6 +891,7 @@ function bindButtons() {
   });
 
   document.getElementById("generateTeamsBtn")?.addEventListener("click", generateTeams);
+  document.getElementById("generateFairTeamsBtn")?.addEventListener("click", generateFairTeams);
   document.getElementById("team1WinBtn")?.addEventListener("click", () => saveResult(1));
   document.getElementById("team2WinBtn")?.addEventListener("click", () => saveResult(2));
 }
