@@ -388,7 +388,39 @@ function generateTeams() {
 
   renderGeneratedTeams();
 }
+function generateFairTeams() {
+  const selected = getSelectedPlayers();
 
+  if (selected.length < 2) {
+    alert("Bitte mindestens 2 Spieler auswählen.");
+    return;
+  }
+
+  const players = selected
+    .map(name => ({
+      name,
+      elo: currentPlayersObj[name]?.elo ?? 1200
+    }))
+    .sort((a, b) => b.elo - a.elo);
+
+  generatedTeam1 = [];
+  generatedTeam2 = [];
+
+  let elo1 = 0;
+  let elo2 = 0;
+
+  for (const player of players) {
+    if (elo1 <= elo2) {
+      generatedTeam1.push(player.name);
+      elo1 += player.elo;
+    } else {
+      generatedTeam2.push(player.name);
+      elo2 += player.elo;
+    }
+  }
+
+  renderGeneratedTeams();
+}
 function renderGeneratedTeams() {
   const team1List = document.getElementById("team1List");
   const team2List = document.getElementById("team2List");
