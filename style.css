@@ -773,11 +773,13 @@ nav a:hover {
 #team2List {
   background: #111827;
   border-radius: 12px;
-  min-height: 120px;
+  height: 290px;       /* Platz für ca. 5 Spieler */
   padding: 12px;
   margin-bottom: 14px;
   line-height: 1.8;
   color: #E5E7EB;
+
+  overflow-y: auto;
 }
 
 .generated-team button {
