@@ -492,22 +492,6 @@ function renderGeneratedTeams() {
     teamGenerationTimerIds.push(timerId);
   });
 }
-  let index = 0;
-
-  const interval = setInterval(() => {
-    if (index >= picks.length) {
-      clearInterval(interval);
-      return;
-    }
-
-    picks[index].list.insertAdjacentHTML(
-      "beforeend",
-      createGeneratedPlayerHTML(picks[index].name)
-    );
-
-    index++;
-  }, 500);
-}
 
 async function saveResult(winningTeamNumber) {
   if (!generatedTeam1.length || !generatedTeam2.length) {
