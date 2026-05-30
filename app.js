@@ -389,7 +389,7 @@ function generateTeams() {
   renderGeneratedTeams();
 }
 
-function renderGeneratedTeams() {
+async function renderGeneratedTeams() {
   const team1List = document.getElementById("team1List");
   const team2List = document.getElementById("team2List");
   const team1Chance = document.getElementById("team1Chance");
@@ -400,43 +400,54 @@ function renderGeneratedTeams() {
   team1Chance.textContent = `${c1}% Gewinnchance`;
   team2Chance.textContent = `${c2}% Gewinnchance`;
 
-  team1List.innerHTML = generatedTeam1
-    .map(name => {
-      const p = currentPlayersObj[name];
-      return `
-<div class="generated-player">
-  <img
-    class="generated-icon rank-${rankFromElo(p?.elo ?? 1200).toLowerCase()}"
-    src="${getProfileIconUrl(p?.profile_icon_id)}"
-    alt=""
-  >
-  <span>${escapeHtml(name)}</span>
-  <span class="generated-player-elo">
-    ${p?.elo ?? 1200} Elo
-  </span>
-</div>
-`;
-    })
-    .join("");
+  function createGeneratedPlayerHTML(name) {
+    const p = currentPlayersObj[name];
 
-  team2List.innerHTML = generatedTeam2
-    .map(name => {
-      const p = currentPlayersObj[name];
-      return `
-<div class="generated-player">
-  <img
-    class="generated-icon rank-${rankFromElo(p?.elo ?? 1200).toLowerCase()}"
-    src="${getProfileIconUrl(p?.profile_icon_id)}"
-    alt=""
-  >
-  <span>${escapeHtml(name)}</span>
-  <span class="generated-player-elo">
-    ${p?.elo ?? 1200} Elo
-  </span>
-</div>
-`;
-    })
-    .join("");
+    return `
+      <div class="generated-player">
+        <img
+          class="generated-icon rank-${rankFromElo(p?.elo ?? 1200).toLowerCase()}"
+          src="${getProfileIconUrl(p?.profile_icon_id)}"
+          alt=""
+        >
+        <span>${escapeHtml(name)}</span>
+        <span class="generated-player-elo">
+          ${p?.elo ?? 1200} Elo
+        </span>
+      </div>
+    `;
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  team1List.innerHTML = "";
+  team2List.innerHTML = "";
+
+  const maxPlayers = Math.max(
+    generatedTeam1.length,
+    generatedTeam2.length
+  );
+
+  for (let i = 0; i < maxPlayers; i++) {
+
+    if (generatedTeam1[i]) {
+      team1List.insertAdjacentHTML(
+        "beforeend",
+        createGeneratedPlayerHTML(generatedTeam1[i])
+      );
+      await sleep(250);
+    }
+
+    if (generatedTeam2[i]) {
+      team2List.insertAdjacentHTML(
+        "beforeend",
+        createGeneratedPlayerHTML(generatedTeam2[i])
+      );
+      await sleep(250);
+    }
+  }
 }
 
 async function saveResult(winningTeamNumber) {
