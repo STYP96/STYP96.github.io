@@ -547,20 +547,23 @@ nav a:hover {
 
 .player-select-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 12px;
   margin-bottom: 16px;
+  overflow: visible;
 }
 
 .player-check {
   position: relative;
-  height: 95px;
-  padding: 14px 14px 14px 68px;
+  min-height: 96px;
+  height: auto;
+  padding: 14px 94px 14px 118px;
   border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: 14px;
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.96));
   cursor: pointer;
-  display: block;
+  display: flex;
+  align-items: center;
   overflow: visible !important;
   transition: 0.2s ease;
 }
@@ -578,7 +581,7 @@ nav a:hover {
 .custom-check,
 .checkmark-box {
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   width: 44px;
@@ -587,6 +590,7 @@ nav a:hover {
   border: 2px solid rgba(148, 163, 184, 0.85);
   background: rgba(15, 23, 42, 0.95);
   transition: 0.2s ease;
+  z-index: 2;
 }
 
 .player-check input:checked + .custom-check,
@@ -617,42 +621,47 @@ nav a:hover {
 
 .player-card-name,
 .player-name-center {
-  position: absolute;
-  left: 62px;
-  right: 78px;
-  top: 50%;
-  transform: translateY(-50%);
+  position: static !important;
+  transform: none !important;
 
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+
+  min-width: 0;
+  width: 100%;
 
   color: #F8FAFC;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 800;
   text-align: left;
 
   white-space: nowrap;
-  overflow: visible;
-  line-height: 1;
+  overflow: visible !important;
+  line-height: 1.2;
 }
 
 .player-card-name .summoner-icon,
 .player-name-center .summoner-icon {
-  position: static !important;
-  transform: none !important;
+  position: absolute !important;
+  left: 68px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
 
-  width: 34px !important;
-  height: 34px !important;
-  min-width: 34px !important;
-  min-height: 34px !important;
-  max-width: 34px !important;
-  max-height: 34px !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  max-width: 42px !important;
+  max-height: 42px !important;
 
   border-radius: 50% !important;
   object-fit: cover !important;
-  flex-shrink: 0;
+  object-position: center center !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+  z-index: 2;
 }
 
 .player-card-name span,
@@ -660,9 +669,9 @@ nav a:hover {
   display: block;
   min-width: 0;
 
-  white-space: nowrap;
-  overflow: visible;
-  text-overflow: unset;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
 
   text-align: left;
 }
@@ -1137,53 +1146,119 @@ nav a:hover {
   border-color: #ffffff !important;
   box-shadow: 0 0 10px #60a5fa;
 }
-/* FINAL FIX: Teamgenerator Icon fest + Name nicht abschneiden */
+/* FINAL FIX: Teamgenerator - nichts abschneiden, Icon rund, Border sichtbar */
 
-#playerSelectList .player-check .player-card-name {
-  position: absolute !important;
-  left: 62px !important;
-  right: 8px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-
-  display: block !important;
+#playerSelectList,
+.player-select-list {
   overflow: visible !important;
-
-  height: 36px !important;
-  line-height: 36px !important;
-
-  white-space: nowrap !important;
 }
 
-#playerSelectList .player-check .player-card-name .summoner-icon {
+#playerSelectList .player-check {
+  position: relative !important;
+  min-height: 96px !important;
+  height: auto !important;
+  padding-left: 118px !important;
+  padding-right: 96px !important;
+  overflow: visible !important;
+}
+
+#playerSelectList .player-check .custom-check,
+#playerSelectList .player-check .checkmark-box {
+  left: 14px !important;
+  z-index: 3 !important;
+}
+
+#playerSelectList .player-check .player-card-name,
+#playerSelectList .player-check .player-name-center {
+  position: static !important;
+  transform: none !important;
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+}
+
+#playerSelectList .player-check .player-card-name .summoner-icon,
+#playerSelectList .player-check .player-name-center .summoner-icon {
   position: absolute !important;
-  left: 0 !important;
+  left: 68px !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
 
-  width: 34px !important;
-  height: 34px !important;
-  min-width: 34px !important;
-  min-height: 34px !important;
-  max-width: 34px !important;
-  max-height: 34px !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  max-width: 42px !important;
+  max-height: 42px !important;
 
   border-radius: 50% !important;
   object-fit: cover !important;
+  object-position: center center !important;
   overflow: hidden !important;
+
+  border-width: 3px !important;
+  border-style: solid !important;
+  box-sizing: border-box !important;
+
+  z-index: 3 !important;
 }
 
-#playerSelectList .player-check .player-card-name > span {
+#playerSelectList .player-check .player-card-name > span,
+#playerSelectList .player-check .player-name-center > span {
   display: block !important;
-  margin-left: 42px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
 
   color: #F8FAFC !important;
-  font-size: 10.5px !important;
+  font-size: 14px !important;
   font-weight: 800 !important;
 
   white-space: nowrap !important;
   overflow: visible !important;
   text-overflow: unset !important;
-
   text-align: left !important;
 }
+
+/* Falls der Name direkt als Text im Container steht */
+#playerSelectList .player-check .player-card-name {
+  color: #F8FAFC !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+/* Elo und Winrate rechts lassen, ohne Icon/Name zu überdecken */
+#playerSelectList .player-check .player-card-elo,
+#playerSelectList .player-check .player-elo {
+  right: 14px !important;
+  top: 12px !important;
+  z-index: 4 !important;
+}
+
+#playerSelectList .player-check .player-card-wr,
+#playerSelectList .player-check .player-wr {
+  right: 14px !important;
+  bottom: 12px !important;
+  z-index: 4 !important;
+}
+
+@media (max-width: 1050px) {
+  .player-select-list {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+
+  #playerSelectList .player-check {
+    padding-left: 112px !important;
+    padding-right: 86px !important;
+  }
+
+  #playerSelectList .player-check .player-card-name .summoner-icon,
+  #playerSelectList .player-check .player-name-center .summoner-icon {
+    left: 66px !important;
+  }
+}
+
