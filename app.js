@@ -421,11 +421,25 @@ function generateFairTeams() {
 
   renderGeneratedTeams();
 }
+let teamGenerationTimerIds = [];
+let isGeneratingTeams = false;
+
 function renderGeneratedTeams() {
   const team1List = document.getElementById("team1List");
   const team2List = document.getElementById("team2List");
   const team1Chance = document.getElementById("team1Chance");
   const team2Chance = document.getElementById("team2Chance");
+  const generateBtn = document.getElementById("generateTeamsBtn");
+  const fairGenerateBtn = document.getElementById("generateFairTeamsBtn");
+
+  teamGenerationTimerIds.forEach(id => clearTimeout(id));
+  teamGenerationTimerIds = [];
+
+  if (isGeneratingTeams) return;
+  isGeneratingTeams = true;
+
+  generateBtn.disabled = true;
+  fairGenerateBtn.disabled = true;
 
   const [c1, c2] = teamChances(generatedTeam1, generatedTeam2);
 
@@ -457,25 +471,27 @@ function renderGeneratedTeams() {
   const maxPlayers = Math.max(generatedTeam1.length, generatedTeam2.length);
 
   for (let i = 0; i < maxPlayers; i++) {
-    if (generatedTeam1[i]) {
-      picks.push({ list: team1List, name: generatedTeam1[i] });
-    }
-
-    if (generatedTeam2[i]) {
-      picks.push({ list: team2List, name: generatedTeam2[i] });
-    }
+    if (generatedTeam1[i]) picks.push({ list: team1List, name: generatedTeam1[i] });
+    if (generatedTeam2[i]) picks.push({ list: team2List, name: generatedTeam2[i] });
   }
 
   picks.forEach((pick, index) => {
-    setTimeout(() => {
+    const timerId = setTimeout(() => {
       pick.list.insertAdjacentHTML(
         "beforeend",
         createGeneratedPlayerHTML(pick.name)
       );
+
+      if (index === picks.length - 1) {
+        isGeneratingTeams = false;
+        generateBtn.disabled = false;
+        fairGenerateBtn.disabled = false;
+      }
     }, index * 500);
+
+    teamGenerationTimerIds.push(timerId);
   });
 }
-
   let index = 0;
 
   const interval = setInterval(() => {
