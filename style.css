@@ -837,7 +837,13 @@ nav a:hover {
   color: #A78BFA;
   box-shadow: 0 0 30px rgba(109,40,217,0.35);
 }
+.fair-btn {
+  background: linear-gradient(135deg,#16A34A,#22C55E);
+}
 
+.fair-btn:hover {
+  background: linear-gradient(135deg,#15803D,#16A34A);
+}
 /* Add Player */
 
 .add-player-box {
