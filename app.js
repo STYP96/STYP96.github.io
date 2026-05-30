@@ -389,7 +389,7 @@ function generateTeams() {
   renderGeneratedTeams();
 }
 
-async function renderGeneratedTeams() {
+function renderGeneratedTeams() {
   const team1List = document.getElementById("team1List");
   const team2List = document.getElementById("team2List");
   const team1Chance = document.getElementById("team1Chance");
@@ -418,36 +418,43 @@ async function renderGeneratedTeams() {
     `;
   }
 
-  function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
   team1List.innerHTML = "";
   team2List.innerHTML = "";
 
-  const maxPlayers = Math.max(
-    generatedTeam1.length,
-    generatedTeam2.length
-  );
+  const picks = [];
+  const maxPlayers = Math.max(generatedTeam1.length, generatedTeam2.length);
 
   for (let i = 0; i < maxPlayers; i++) {
-
     if (generatedTeam1[i]) {
-      team1List.insertAdjacentHTML(
-        "beforeend",
-        createGeneratedPlayerHTML(generatedTeam1[i])
-      );
-      await sleep(250);
+      picks.push({
+        list: team1List,
+        name: generatedTeam1[i]
+      });
     }
 
     if (generatedTeam2[i]) {
-      team2List.insertAdjacentHTML(
-        "beforeend",
-        createGeneratedPlayerHTML(generatedTeam2[i])
-      );
-      await sleep(250);
+      picks.push({
+        list: team2List,
+        name: generatedTeam2[i]
+      });
     }
   }
+
+  let index = 0;
+
+  const interval = setInterval(() => {
+    if (index >= picks.length) {
+      clearInterval(interval);
+      return;
+    }
+
+    picks[index].list.insertAdjacentHTML(
+      "beforeend",
+      createGeneratedPlayerHTML(picks[index].name)
+    );
+
+    index++;
+  }, 500);
 }
 
 async function saveResult(winningTeamNumber) {
