@@ -732,7 +732,7 @@ nav a:hover {
   background: #0B1220;
   border-radius: 18px;
   padding: 18px;
-  min-height: 220px;
+  min-height: 380px;
 }
 
 .generated-team h3 {
@@ -773,7 +773,7 @@ nav a:hover {
 #team2List {
   background: #111827;
   border-radius: 12px;
-  height: 420px;       /* Platz für ca. 5 Spieler */
+  height: 260px;       /* Platz für ca. 5 Spieler */
   padding: 12px;
   margin-bottom: 14px;
   line-height: 1.8;
